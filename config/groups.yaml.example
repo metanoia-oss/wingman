@@ -1,0 +1,37 @@
+# Group Configuration
+# Maps WhatsApp group JIDs to group settings
+#
+# Copy this file to groups.yaml and fill in your actual group JIDs:
+#   cp config/groups.yaml.example config/groups.yaml
+#
+# How to find group JIDs:
+#   1. Send a message in the group
+#   2. Check the logs: ./scripts/daemon.sh logs
+#   3. Look for "Processing message: chat=<GROUP_JID>..."
+#
+# JID Format: <group_id>@g.us
+# Example: 120363012345678901@g.us
+
+groups:
+  # Example: Family group - always respond
+  "120363012345678901@g.us":
+    name: "Family Chat"
+    category: family        # family, friends, work, unknown
+    reply_policy: always    # always, selective (only when mentioned), never
+
+  # Example: Work group - never respond
+  "120363012345678902@g.us":
+    name: "Work Team"
+    category: work
+    reply_policy: never
+
+  # Example: Friends group - respond only when mentioned
+  "120363012345678903@g.us":
+    name: "College Friends"
+    category: friends
+    reply_policy: selective
+
+# Default values for groups not listed above
+defaults:
+  category: unknown
+  reply_policy: selective  # Only respond when mentioned (@BotName)

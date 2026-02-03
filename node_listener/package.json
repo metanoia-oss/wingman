@@ -1,0 +1,20 @@
+{
+  "name": "wingman-whatsapp-listener",
+  "version": "1.0.0",
+  "description": "Wingman WhatsApp transport using Baileys",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.16",
+    "pino": "^8.16.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.2"
+  }
+}

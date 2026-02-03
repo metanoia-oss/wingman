@@ -1,0 +1,51 @@
+# Environment
+.env
+
+# Node.js
+node_modules/
+node_listener/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+.eggs/
+*.egg-info/
+*.egg
+
+# WhatsApp Authentication (CRITICAL - contains session credentials)
+auth_state/
+
+# Data & Logs
+data/
+logs/
+
+# User Configuration (contains personal data)
+config/contacts.yaml
+config/groups.yaml
+config/policies.yaml
+
+# State files
+.last_disconnect
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# LaunchAgent plist (user-specific)
+*.plist

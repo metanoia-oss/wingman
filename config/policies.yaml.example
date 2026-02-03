@@ -1,0 +1,76 @@
+# Policy Configuration
+# Rules for determining when to respond to messages
+#
+# Copy this file to policies.yaml (or use as-is since it doesn't contain personal data):
+#   cp config/policies.yaml.example config/policies.yaml
+#
+# Rules are evaluated in order; first match wins.
+# If no rule matches, the fallback action is used.
+#
+# Conditions available:
+#   - is_dm: true/false (is this a direct message?)
+#   - is_group: true/false (is this a group chat?)
+#   - role: girlfriend/sister/friend/family/colleague/unknown
+#   - group_category: family/friends/work/unknown
+#   - is_reply_to_bot: true/false (is this a reply to bot's message?)
+#   - is_mentioned: true/false (is the bot @mentioned?)
+#
+# Actions:
+#   - always: Always respond
+#   - selective: Only respond if mentioned or replying to bot
+#   - never: Never respond
+
+rules:
+  # DM policies based on contact role
+  - name: "girlfriend_dm"
+    conditions:
+      is_dm: true
+      role: girlfriend
+    action: always
+
+  - name: "sister_dm"
+    conditions:
+      is_dm: true
+      role: sister
+    action: always
+
+  - name: "friend_dm"
+    conditions:
+      is_dm: true
+      role: friend
+    action: always
+
+  - name: "unknown_dm"
+    conditions:
+      is_dm: true
+      role: unknown
+    action: never
+
+  # Group policies based on category
+  - name: "family_group"
+    conditions:
+      is_group: true
+      group_category: family
+    action: always
+
+  - name: "work_group"
+    conditions:
+      is_group: true
+      group_category: work
+    action: never
+
+  - name: "friends_group"
+    conditions:
+      is_group: true
+      group_category: friends
+    action: selective
+
+  # Reply to bot's message (thread continuation)
+  - name: "reply_to_bot"
+    conditions:
+      is_reply_to_bot: true
+    action: always
+
+# Fallback when no rule matches
+fallback:
+  action: selective  # Only respond if mentioned

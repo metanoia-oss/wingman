@@ -1,0 +1,77 @@
+# Contact Configuration
+# Maps WhatsApp JIDs to contact profiles with roles and preferences
+#
+# Copy this file to contacts.yaml and fill in your actual contact JIDs:
+#   cp config/contacts.yaml.example config/contacts.yaml
+#
+# JID Format: +<country_code><phone_number>@s.whatsapp.net
+# Example: +14155551234@s.whatsapp.net
+#
+# NOTE: Config auto-reloads every 2 seconds - no restart needed after changes!
+
+contacts:
+  # Example: Partner (loving tone)
+  "+14155551234@s.whatsapp.net":
+    name: "Partner Name"
+    role: girlfriend        # girlfriend, sister, friend, family, colleague, unknown
+    tone: loving            # loving, affectionate, friendly, casual, sarcastic, neutral
+    allow_proactive: true   # Allow bot to initiate conversations
+    cooldown_override: 30   # Custom cooldown in seconds (overrides default)
+
+  # Example: Close partner (affectionate tone)
+  "+14155551235@s.whatsapp.net":
+    name: "SO Name"
+    role: girlfriend
+    tone: affectionate      # Warm and caring
+    cooldown_override: 30
+
+  # Example: Sibling (friendly tone)
+  "+14155551236@s.whatsapp.net":
+    name: "Sibling Name"
+    role: sister
+    tone: friendly          # Playful teasing
+    cooldown_override: 45
+
+  # Example: Close Friend (casual tone)
+  "+14155551237@s.whatsapp.net":
+    name: "Friend Name"
+    role: friend
+    tone: casual            # Relaxed and natural
+    cooldown_override: 60
+
+  # Example: Friend who likes banter (sarcastic tone)
+  "+14155551238@s.whatsapp.net":
+    name: "Witty Friend"
+    role: friend
+    tone: sarcastic         # Dry humor and playful roasts
+    cooldown_override: 60
+
+  # Example: Acquaintance (neutral tone)
+  "+14155551239@s.whatsapp.net":
+    name: "Colleague Name"
+    role: colleague
+    tone: neutral           # Polite and professional
+    cooldown_override: 120
+
+# Default values for contacts not listed above
+defaults:
+  role: unknown
+  tone: neutral
+  allow_proactive: false
+  cooldown_override: null  # Uses system default from .env
+
+# Available Tones:
+# - loving:       Deep affection, romantic, intimate (for partners)
+# - affectionate: Warm, caring, supportive
+# - friendly:     Playful teasing, sibling banter
+# - casual:       Relaxed, natural friend energy
+# - sarcastic:    Witty, dry humor, playful roasts
+# - neutral:      Polite, maintains boundaries
+
+# Available Roles:
+# - girlfriend:   Romantic partner
+# - sister:       Sibling/family member
+# - friend:       Close friend
+# - family:       Other family members
+# - colleague:    Work contacts
+# - unknown:      Default for unrecognized contacts
