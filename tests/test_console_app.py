@@ -69,4 +69,4 @@ class TestVersion:
     def test_version_synced(self):
         from wingman import __version__
 
-        assert __version__ == "1.1.0"
+        assert __version__ == "1.1.1"
