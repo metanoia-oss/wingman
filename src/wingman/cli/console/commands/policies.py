@@ -122,11 +122,13 @@ class PoliciesCommand(BaseCommand):
         if "rules" not in data or not isinstance(data["rules"], list):
             data["rules"] = []
 
-        data["rules"].append({
-            "name": name,
-            "conditions": conditions,
-            "action": action,
-        })
+        data["rules"].append(
+            {
+                "name": name,
+                "conditions": conditions,
+                "action": action,
+            }
+        )
 
         self._save_policies_data(data)
         print_success(f"Added rule: {name} (action={action})")

@@ -168,7 +168,9 @@ class StatusCommand(BaseCommand):
                                 f"  Paused:    [yellow]Yes[/yellow] ({format_uptime(remaining)} remaining)"
                             )
                         else:
-                            console.print("  Paused:    [yellow]Yes (expired, pending auto-resume)[/yellow]")
+                            console.print(
+                                "  Paused:    [yellow]Yes (expired, pending auto-resume)[/yellow]"
+                            )
                     else:
                         console.print("  Paused:    [yellow]Yes (indefinitely)[/yellow]")
                 transports = status.get("transports", {})

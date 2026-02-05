@@ -91,16 +91,16 @@ class GroupsCommand(BaseCommand):
             valid_categories = [c.value for c in GroupCategory]
             valid_policies = [p.value for p in ReplyPolicy]
             if category not in valid_categories:
-                print_error(f"Invalid category: {category}. Choose from: {', '.join(valid_categories)}")
+                print_error(
+                    f"Invalid category: {category}. Choose from: {', '.join(valid_categories)}"
+                )
                 return
             if policy not in valid_policies:
                 print_error(f"Invalid policy: {policy}. Choose from: {', '.join(valid_policies)}")
                 return
         else:
             try:
-                jid = questionary.text(
-                    "Group JID (e.g., 120363012345678901@g.us):"
-                ).ask()
+                jid = questionary.text("Group JID (e.g., 120363012345678901@g.us):").ask()
                 if not jid:
                     return
                 name = questionary.text("Display name:", default="").ask()

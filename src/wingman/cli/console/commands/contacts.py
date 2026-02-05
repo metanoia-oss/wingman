@@ -112,22 +112,16 @@ class ContactsCommand(BaseCommand):
         else:
             # Interactive mode
             try:
-                jid = questionary.text(
-                    "JID (e.g., +1234567890@s.whatsapp.net):"
-                ).ask()
+                jid = questionary.text("JID (e.g., +1234567890@s.whatsapp.net):").ask()
                 if not jid:
                     return
                 name = questionary.text("Display name:", default="").ask()
                 if not name:
                     name = jid
-                role = questionary.select(
-                    "Role:", choices=[r.value for r in ContactRole]
-                ).ask()
+                role = questionary.select("Role:", choices=[r.value for r in ContactRole]).ask()
                 if not role:
                     return
-                tone = questionary.select(
-                    "Tone:", choices=[t.value for t in ContactTone]
-                ).ask()
+                tone = questionary.select("Tone:", choices=[t.value for t in ContactTone]).ask()
                 if not tone:
                     return
             except KeyboardInterrupt:

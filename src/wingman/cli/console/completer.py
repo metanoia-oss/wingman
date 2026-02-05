@@ -97,7 +97,9 @@ class ConsoleCompleter(Completer):
             if cmd_name in _CONTACT_COMMANDS:
                 for name in self._get_contact_names():
                     if name.lower().startswith(sub_prefix):
-                        yield Completion(name, start_position=-len(sub_prefix), display_meta="contact")
+                        yield Completion(
+                            name, start_position=-len(sub_prefix), display_meta="contact"
+                        )
             return
 
         if len(parts) == 2 and text.endswith(" "):
@@ -139,16 +141,28 @@ class ConsoleCompleter(Completer):
                 return
 
             # Config section completion: /config show <section>
-            if text.endswith(" ") and cmd_name == "config" and len(parts) == 2 and parts[1] == "show":
+            if (
+                text.endswith(" ")
+                and cmd_name == "config"
+                and len(parts) == 2
+                and parts[1] == "show"
+            ):
                 for section in ["openai", "safety", "bot", "imessage"]:
                     yield Completion(section, start_position=0, display_meta="section")
                 return
 
-            if len(parts) == 3 and not text.endswith(" ") and cmd_name == "config" and parts[1] == "show":
+            if (
+                len(parts) == 3
+                and not text.endswith(" ")
+                and cmd_name == "config"
+                and parts[1] == "show"
+            ):
                 prefix = parts[2].lower()
                 for section in ["openai", "safety", "bot", "imessage"]:
                     if section.startswith(prefix):
-                        yield Completion(section, start_position=-len(prefix), display_meta="section")
+                        yield Completion(
+                            section, start_position=-len(prefix), display_meta="section"
+                        )
                 return
 
             # If text ends with space and last word is a name/subcommand,
