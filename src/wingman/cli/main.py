@@ -5,7 +5,19 @@ from rich.console import Console
 
 from wingman import __version__
 
-from .commands import auth, config, console as console_cmd, init, logs, start, status, stop, uninstall
+from .commands import (
+    auth,
+    config,
+    init,
+    logs,
+    start,
+    status,
+    stop,
+    uninstall,
+)
+from .commands import (
+    console as console_cmd,
+)
 
 # Create main app
 app = typer.Typer(

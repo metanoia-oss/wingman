@@ -1,7 +1,6 @@
 """Group management commands."""
 
 import questionary
-import yaml
 from rich.console import Console
 from rich.table import Table
 
@@ -10,7 +9,7 @@ from wingman.config.yaml_writer import read_yaml, write_yaml
 
 from ..command_registry import BaseCommand
 from ..parser import ParsedCommand
-from ..renderer import print_error, print_success, print_yaml
+from ..renderer import print_error, print_success
 
 console = Console()
 

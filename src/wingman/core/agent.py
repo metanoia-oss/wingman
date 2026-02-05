@@ -160,6 +160,7 @@ class MultiTransportAgent:
         # Start RPC server for console communication
         try:
             from wingman.config.paths import WingmanPaths
+
             from .rpc_server import RPCServer
 
             paths = WingmanPaths()

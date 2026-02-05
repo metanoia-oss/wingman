@@ -80,7 +80,7 @@ class RPCClient:
 
             return response.get("result")
 
-        except socket.timeout:
+        except TimeoutError:
             raise RPCError("Daemon did not respond in time")
         except ConnectionRefusedError:
             raise RPCError("Daemon refused connection (may have crashed)")
