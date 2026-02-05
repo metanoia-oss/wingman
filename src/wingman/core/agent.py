@@ -87,6 +87,9 @@ class MultiTransportAgent:
         self._transport_tasks: list[asyncio.Task] = []
         self._shutdown_event = asyncio.Event()
 
+        # RPC server (initialized during start)
+        self._rpc_server = None
+
     async def _send_message(self, platform: str, chat_id: str, text: str) -> bool:
         """Route message to appropriate transport."""
         try:
@@ -154,6 +157,17 @@ class MultiTransportAgent:
             )
             self._transport_tasks.append(task)
 
+        # Start RPC server for console communication
+        try:
+            from wingman.config.paths import WingmanPaths
+            from .rpc_server import RPCServer
+
+            paths = WingmanPaths()
+            self._rpc_server = RPCServer(paths.rpc_socket, self)
+            await self._rpc_server.start()
+        except Exception as e:
+            logger.warning(f"Failed to start RPC server: {e}")
+
         logger.info(f"Agent started with {len(self.transports)} transport(s)")
 
         # Wait for shutdown or all tasks to complete
@@ -177,6 +191,13 @@ class MultiTransportAgent:
     async def stop(self) -> None:
         """Stop all transports gracefully."""
         logger.info("Stopping agent...")
+
+        # Stop RPC server
+        if self._rpc_server:
+            try:
+                await self._rpc_server.stop()
+            except Exception as e:
+                logger.error(f"Error stopping RPC server: {e}")
 
         # Stop all transports
         for platform, transport in self.transports.items():

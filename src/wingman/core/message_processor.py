@@ -66,6 +66,10 @@ class MessageProcessor:
         # Track our own user ID per platform
         self.self_ids: dict[str, str] = {}
 
+        # Pause/resume state
+        self.paused: bool = False
+        self.pause_until: float | None = None
+
         # Message sender callback: (platform, chat_id, text) -> success
         self._send_message: MessageSender | None = None
 
@@ -208,6 +212,15 @@ class MessageProcessor:
         Returns:
             Reason string if should skip, None if OK to proceed
         """
+        # Check if paused
+        if self.paused:
+            if self.pause_until and time.time() >= self.pause_until:
+                # Auto-resume after pause duration
+                self.paused = False
+                self.pause_until = None
+            else:
+                return "paused"
+
         # Check quiet hours
         if self.quiet_hours.is_quiet_time():
             return "quiet_hours"

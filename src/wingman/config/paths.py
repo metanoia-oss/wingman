@@ -98,6 +98,16 @@ class WingmanPaths:
         return self._config_dir / "personality.yaml"
 
     @property
+    def rpc_socket(self) -> Path:
+        """Unix domain socket for daemon RPC (~/.cache/wingman/wingman.sock)."""
+        return self._cache_dir / "wingman.sock"
+
+    @property
+    def console_history(self) -> Path:
+        """Console command history file (~/.cache/wingman/console_history)."""
+        return self._cache_dir / "console_history"
+
+    @property
     def pid_file(self) -> Path:
         """PID file for daemon (~/.cache/wingman/wingman.pid)."""
         return self._cache_dir / "wingman.pid"

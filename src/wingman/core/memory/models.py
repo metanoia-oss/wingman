@@ -192,6 +192,85 @@ class MessageStore:
                 cursor = conn.execute("SELECT COUNT(*) FROM messages")
             return cursor.fetchone()[0]
 
+    def get_recent_chats(self, limit: int = 20) -> list[dict]:
+        """Get recently active chats with their last message."""
+        with self._get_connection() as conn:
+            cursor = conn.execute(
+                """
+                SELECT chat_id, sender_name, text, timestamp, is_self, platform,
+                       COUNT(*) as message_count
+                FROM messages
+                WHERE id IN (
+                    SELECT MAX(id) FROM messages GROUP BY chat_id
+                )
+                GROUP BY chat_id
+                ORDER BY timestamp DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
+            rows = cursor.fetchall()
+
+        return [
+            {
+                "chat_id": row["chat_id"],
+                "last_sender": row["sender_name"] or ("Bot" if row["is_self"] else "Unknown"),
+                "last_message": row["text"][:80] if row["text"] else "",
+                "timestamp": row["timestamp"],
+                "platform": row["platform"] or "whatsapp",
+            }
+            for row in rows
+        ]
+
+    def get_stats(self) -> dict:
+        """Get overall message statistics."""
+        with self._get_connection() as conn:
+            total = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+            sent = conn.execute("SELECT COUNT(*) FROM messages WHERE is_self = 1").fetchone()[0]
+            received = total - sent
+            chats = conn.execute("SELECT COUNT(DISTINCT chat_id) FROM messages").fetchone()[0]
+
+            # Recent activity (last 24h)
+            import time
+
+            day_ago = time.time() - 86400
+            recent = conn.execute(
+                "SELECT COUNT(*) FROM messages WHERE timestamp > ?", (day_ago,)
+            ).fetchone()[0]
+
+        return {
+            "total_messages": total,
+            "sent": sent,
+            "received": received,
+            "active_chats": chats,
+            "messages_last_24h": recent,
+        }
+
+    def get_recent_activity(self, limit: int = 20) -> list[dict]:
+        """Get recent bot activity (sent messages)."""
+        with self._get_connection() as conn:
+            cursor = conn.execute(
+                """
+                SELECT chat_id, sender_name, text, timestamp, platform
+                FROM messages
+                WHERE is_self = 1
+                ORDER BY timestamp DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
+            rows = cursor.fetchall()
+
+        return [
+            {
+                "chat_id": row["chat_id"],
+                "text": row["text"][:80] if row["text"] else "",
+                "timestamp": row["timestamp"],
+                "platform": row["platform"] or "whatsapp",
+            }
+            for row in rows
+        ]
+
     def cleanup_old_messages(self, days: int = 30) -> int:
         """
         Delete messages older than specified days.
