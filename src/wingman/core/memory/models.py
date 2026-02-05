@@ -35,8 +35,7 @@ class MessageStore:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
         with self._get_connection() as conn:
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS messages (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     chat_id TEXT NOT NULL,
@@ -47,14 +46,11 @@ class MessageStore:
                     is_self BOOLEAN DEFAULT 0,
                     platform TEXT DEFAULT 'whatsapp'
                 )
-            """
-            )
-            conn.execute(
-                """
+            """)
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_messages_chat
                 ON messages(chat_id, timestamp DESC)
-            """
-            )
+            """)
             # Add platform column if it doesn't exist (migration for existing DBs)
             try:
                 conn.execute("SELECT platform FROM messages LIMIT 1")

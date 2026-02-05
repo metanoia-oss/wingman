@@ -61,7 +61,7 @@ class ContextBuilder:
             'hindi', 'hinglish', or 'english'
         """
         # Devanagari Unicode range
-        hindi_chars = sum(1 for c in text if "\u0900" <= c <= "\u097F")
+        hindi_chars = sum(1 for c in text if "\u0900" <= c <= "\u097f")
 
         if hindi_chars > len(text) * 0.3:
             return "hindi"
