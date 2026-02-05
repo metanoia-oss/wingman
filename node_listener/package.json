@@ -1,13 +1,43 @@
 {
-  "name": "wingman-whatsapp-listener",
+  "name": "wingman-ai",
   "version": "1.0.0",
-  "description": "Wingman WhatsApp transport using Baileys",
+  "description": "WhatsApp listener component for Wingman AI - connects to WhatsApp Web using Baileys",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsc && node dist/index.js"
+    "dev": "tsc && node dist/index.js",
+    "prepublishOnly": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metanoia-oss/wingman.git",
+    "directory": "node_listener"
+  },
+  "author": "Wingman Contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/metanoia-oss/wingman/issues"
+  },
+  "homepage": "https://github.com/metanoia-oss/wingman#readme",
+  "keywords": [
+    "whatsapp",
+    "baileys",
+    "chatbot",
+    "ai",
+    "wingman",
+    "whatsapp-web",
+    "messaging"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "package.json",
+    "README.md"
+  ],
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.16",
     "pino": "^8.16.0",

@@ -1,0 +1,98 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wingman-ai"
+version = "1.0.0"
+description = "An AI-powered personal chat agent for WhatsApp and iMessage with configurable personality and policy-driven responses"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Wingman Contributors" }
+]
+keywords = [
+    "whatsapp",
+    "imessage",
+    "chatbot",
+    "ai",
+    "openai",
+    "gpt",
+    "personal-assistant"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat",
+]
+dependencies = [
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "aiosqlite>=0.19.0",
+    "pyyaml>=6.0",
+    "typer[all]>=0.9.0",
+    "rich>=13.0.0",
+    "questionary>=2.0.0",
+    "platformdirs>=4.0.0",
+    "psutil>=5.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/metanoia-oss/wingman"
+Repository = "https://github.com/metanoia-oss/wingman"
+Documentation = "https://github.com/metanoia-oss/wingman#readme"
+Issues = "https://github.com/metanoia-oss/wingman/issues"
+
+[project.scripts]
+wingman = "wingman.cli.main:app"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/node_listener",
+]
+exclude = [
+    "/node_listener/node_modules",
+    "/node_listener/dist",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wingman"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"node_listener/src" = "share/wingman/node_listener/src"
+"node_listener/package.json" = "share/wingman/node_listener/package.json"
+"node_listener/package-lock.json" = "share/wingman/node_listener/package-lock.json"
+"node_listener/tsconfig.json" = "share/wingman/node_listener/tsconfig.json"
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

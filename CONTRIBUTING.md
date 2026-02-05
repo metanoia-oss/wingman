@@ -13,13 +13,11 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/wingman.git
+git clone https://github.com/YOUR_FORK/wingman.git
 cd wingman
 
-# Set up Python environment
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# Install in development mode
+pip install -e .[dev]
 
 # Build Node.js listener
 cd node_listener
@@ -27,11 +25,8 @@ npm install
 npm run build
 cd ..
 
-# Copy example configs
-cp .env.example .env
-cp config/contacts.yaml.example config/contacts.yaml
-cp config/groups.yaml.example config/groups.yaml
-cp config/policies.yaml.example config/policies.yaml
+# Run setup wizard
+wingman init
 ```
 
 ## Code Style

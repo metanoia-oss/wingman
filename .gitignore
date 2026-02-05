@@ -17,6 +17,8 @@ ENV/
 .eggs/
 *.egg-info/
 *.egg
+dist/
+build/
 
 # WhatsApp Authentication (CRITICAL - contains session credentials)
 auth_state/
