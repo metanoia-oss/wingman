@@ -94,26 +94,23 @@ class NodeInstaller:
         """
         Find the bundled node_listener source.
 
-        Checks:
-        1. Package data location (pip installed)
-        2. Development location (running from source)
+        Checks (in order):
+        1. Wheel force-include location (site-packages/share/wingman/node_listener)
+        2. System shared data locations
+        3. Development location (running from source)
         """
-        import importlib.resources
-
-        # Try package data location first
-        try:
-            # Python 3.9+
-            with importlib.resources.as_file(
-                importlib.resources.files("wingman").joinpath("../../../node_listener")
-            ) as path:
-                if path.exists() and (path / "package.json").exists():
-                    return path
-        except (TypeError, FileNotFoundError):
-            pass
-
-        # Try shared data location (pip installed with pyproject.toml shared-data)
         import sys
 
+        import wingman
+
+        # 1. Check within installed wheel (force-include puts files at
+        #    site-packages/share/wingman/node_listener/)
+        site_packages = Path(wingman.__file__).parent.parent
+        wheel_path = site_packages / "share" / "wingman" / "node_listener"
+        if wheel_path.exists() and (wheel_path / "package.json").exists():
+            return wheel_path
+
+        # 2. Check system shared data locations
         for path in [
             Path(sys.prefix) / "share" / "wingman" / "node_listener",
             Path.home() / ".local" / "share" / "wingman" / "node_listener",
@@ -121,7 +118,7 @@ class NodeInstaller:
             if path.exists() and (path / "package.json").exists():
                 return path
 
-        # Try development location (relative to this file)
+        # 3. Development location (running from source)
         dev_path = Path(__file__).parent.parent.parent.parent.parent / "node_listener"
         if dev_path.exists() and (dev_path / "package.json").exists():
             return dev_path

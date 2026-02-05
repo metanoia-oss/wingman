@@ -111,14 +111,15 @@ class SetupWizard:
                 console=self.console,
             ) as progress:
                 progress.add_task("Testing API key...", total=None)
+                test_result = self._test_api_key(api_key)
 
-                if self._test_api_key(api_key):
-                    self.console.print("  [green]✓[/green] API key is valid")
-                else:
-                    self.console.print("  [red]✗[/red] API key test failed")
-                    proceed = questionary.confirm("Continue anyway?", default=False).ask()
-                    if not proceed:
-                        return None
+            if test_result:
+                self.console.print("  [green]✓[/green] API key is valid")
+            else:
+                self.console.print("  [red]✗[/red] API key test failed")
+                proceed = questionary.confirm("Continue anyway?", default=False).ask()
+                if not proceed:
+                    return None
 
         self.console.print()
         return api_key
