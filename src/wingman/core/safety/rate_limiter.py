@@ -1,9 +1,8 @@
 """Global rate limiting for bot replies."""
 
-import time
 import logging
+import time
 from collections import deque
-from typing import Deque
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class RateLimiter:
     def __init__(self, max_replies_per_hour: int = 30):
         self.max_replies = max_replies_per_hour
         self.window_seconds = 3600  # 1 hour
-        self._timestamps: Deque[float] = deque()
+        self._timestamps: deque[float] = deque()
 
     def _cleanup_old_entries(self) -> None:
         """Remove timestamps older than the window."""

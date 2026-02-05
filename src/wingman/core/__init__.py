@@ -1,9 +1,9 @@
 """Core orchestration module for Wingman."""
 
 from .agent import MultiTransportAgent, WhatsAppAgent
-from .process_manager import NodeProcessManager
-from .ipc_handler import IPCHandler, IPCMessage, IPCCommand
+from .ipc_handler import IPCCommand, IPCHandler, IPCMessage
 from .message_processor import MessageProcessor
+from .process_manager import NodeProcessManager
 
 __all__ = [
     "MultiTransportAgent",

@@ -3,10 +3,9 @@
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional
 
-from ..base import BaseTransport, Platform, MessageEvent
-from .db_listener import IMessageDBListener, IMessageData
+from ..base import BaseTransport, MessageEvent, Platform
+from .db_listener import IMessageData, IMessageDBListener
 from .sender import IMessageSender
 
 logger = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ class IMessageTransport(BaseTransport):
 
     def __init__(
         self,
-        db_path: Optional[Path] = None,
+        db_path: Path | None = None,
         poll_interval: float = 2.0,
     ):
         super().__init__()
@@ -33,7 +32,7 @@ class IMessageTransport(BaseTransport):
             poll_interval=poll_interval,
         )
         self._sender = IMessageSender()
-        self._listener_task: Optional[asyncio.Task] = None
+        self._listener_task: asyncio.Task | None = None
 
     @property
     def platform(self) -> Platform:
@@ -107,8 +106,6 @@ class IMessageTransport(BaseTransport):
         """Send an iMessage."""
         # Parse chat_id to determine if group or individual
         # Format: "imessage:+1234567890" or "chat123456789"
-
-        is_group = not chat_id.startswith("imessage:")
 
         if chat_id.startswith("imessage:"):
             # Direct message - extract phone/email

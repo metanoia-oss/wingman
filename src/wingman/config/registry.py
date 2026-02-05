@@ -7,7 +7,6 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import yaml
 
@@ -57,8 +56,8 @@ class ContactProfile:
     role: ContactRole
     tone: ContactTone
     allow_proactive: bool = False
-    cooldown_override: Optional[int] = None
-    imessage_id: Optional[str] = None  # Linked iMessage identifier
+    cooldown_override: int | None = None
+    imessage_id: str | None = None  # Linked iMessage identifier
 
     @classmethod
     def from_dict(cls, jid: str, data: dict) -> "ContactProfile":
@@ -99,7 +98,7 @@ class ContactDefaults:
     role: ContactRole = ContactRole.UNKNOWN
     tone: ContactTone = ContactTone.NEUTRAL
     allow_proactive: bool = False
-    cooldown_override: Optional[int] = None
+    cooldown_override: int | None = None
 
 
 @dataclass
@@ -112,13 +111,13 @@ class GroupDefaults:
 class ContactRegistry:
     """Registry for resolving contact JIDs to profiles."""
 
-    def __init__(self, config_path: Optional[Path] = None, auto_reload: bool = True):
+    def __init__(self, config_path: Path | None = None, auto_reload: bool = True):
         self._contacts: dict[str, ContactProfile] = {}
         self._imessage_lookup: dict[str, str] = {}  # iMessage ID -> primary JID
         self._defaults = ContactDefaults()
         self._config_path = config_path
         self._last_modified: float = 0
-        self._watcher_thread: Optional[threading.Thread] = None
+        self._watcher_thread: threading.Thread | None = None
         self._stop_watcher = threading.Event()
 
         if config_path and config_path.exists():
@@ -129,7 +128,7 @@ class ContactRegistry:
     def _load_config(self, config_path: Path) -> None:
         """Load contact configuration from YAML file."""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f) or {}
 
             # Load contacts
@@ -241,12 +240,12 @@ class ContactRegistry:
 class GroupRegistry:
     """Registry for resolving group JIDs to configurations."""
 
-    def __init__(self, config_path: Optional[Path] = None, auto_reload: bool = True):
+    def __init__(self, config_path: Path | None = None, auto_reload: bool = True):
         self._groups: dict[str, GroupConfig] = {}
         self._defaults = GroupDefaults()
         self._config_path = config_path
         self._last_modified: float = 0
-        self._watcher_thread: Optional[threading.Thread] = None
+        self._watcher_thread: threading.Thread | None = None
         self._stop_watcher = threading.Event()
 
         if config_path and config_path.exists():
@@ -257,7 +256,7 @@ class GroupRegistry:
     def _load_config(self, config_path: Path) -> None:
         """Load group configuration from YAML file."""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f) or {}
 
             # Load groups

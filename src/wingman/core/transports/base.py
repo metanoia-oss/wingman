@@ -2,9 +2,10 @@
 
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class MessageEvent:
     platform: Platform
 
     # Sender info
-    sender_name: Optional[str] = None
+    sender_name: str | None = None
 
     # Message type flags
     is_group: bool = False
@@ -38,7 +39,7 @@ class MessageEvent:
     raw_data: dict = field(default_factory=dict)
 
     # Reply context (if replying to a message)
-    quoted_message: Optional[dict] = None
+    quoted_message: dict | None = None
 
 
 # Type alias for message handler callback
@@ -49,7 +50,7 @@ class BaseTransport(ABC):
     """Abstract base class for message transports."""
 
     def __init__(self):
-        self._message_handler: Optional[MessageHandler] = None
+        self._message_handler: MessageHandler | None = None
         self._running = False
 
     @property

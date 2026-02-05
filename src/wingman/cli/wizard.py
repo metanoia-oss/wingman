@@ -1,11 +1,9 @@
 """Interactive setup wizard for Wingman."""
 
 import re
-from pathlib import Path
-from typing import Optional
 
-import yaml
 import questionary
+import yaml
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
@@ -84,7 +82,7 @@ class SetupWizard:
 
         return True
 
-    def _get_openai_config(self) -> Optional[str]:
+    def _get_openai_config(self) -> str | None:
         """Get OpenAI API key from user."""
         self.console.print("[bold]Step 2/5: OpenAI Configuration[/bold]")
         self.console.print()
@@ -113,7 +111,7 @@ class SetupWizard:
                 TextColumn("[progress.description]{task.description}"),
                 console=self.console,
             ) as progress:
-                task = progress.add_task("Testing API key...", total=None)
+                progress.add_task("Testing API key...", total=None)
 
                 if self._test_api_key(api_key):
                     self.console.print("  [green]✓[/green] API key is valid")

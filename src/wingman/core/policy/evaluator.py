@@ -3,15 +3,14 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import yaml
 
 from wingman.config.registry import (
     ContactProfile,
     ContactRole,
-    GroupConfig,
     GroupCategory,
+    GroupConfig,
     ReplyPolicy,
 )
 
@@ -34,7 +33,7 @@ class MessageContext:
     contact: ContactProfile
 
     # Optional fields with defaults
-    group: Optional[GroupConfig] = None
+    group: GroupConfig | None = None
     platform: str = "whatsapp"
     is_reply_to_bot: bool = False
     is_mentioned: bool = False
@@ -45,7 +44,7 @@ class MessageContext:
         return self.contact.role
 
     @property
-    def group_category(self) -> Optional[GroupCategory]:
+    def group_category(self) -> GroupCategory | None:
         """Get the group category if in a group."""
         return self.group.category if self.group else None
 
@@ -55,7 +54,7 @@ class PolicyDecision:
     """Result of policy evaluation."""
     should_respond: bool
     reason: str
-    rule_name: Optional[str] = None
+    rule_name: str | None = None
     action: ReplyPolicy = ReplyPolicy.SELECTIVE
 
 
@@ -82,7 +81,7 @@ class PolicyEvaluator:
     whether the bot should respond.
     """
 
-    def __init__(self, config_path: Optional[Path] = None, bot_name: str = "Maximus"):
+    def __init__(self, config_path: Path | None = None, bot_name: str = "Maximus"):
         self._rules: list[PolicyRule] = []
         self._fallback_action = ReplyPolicy.SELECTIVE
         self._bot_name = bot_name.lower()
@@ -93,7 +92,7 @@ class PolicyEvaluator:
     def _load_config(self, config_path: Path) -> None:
         """Load policy configuration from YAML file."""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f) or {}
 
             # Load rules
@@ -250,7 +249,7 @@ class PolicyEvaluator:
         text: str,
         is_group: bool,
         contact: ContactProfile,
-        group: Optional[GroupConfig] = None,
+        group: GroupConfig | None = None,
         is_reply_to_bot: bool = False,
         platform: str = "whatsapp",
     ) -> MessageContext:

@@ -1,8 +1,9 @@
 """Context building for LLM conversations."""
 
 import logging
-from typing import List, Dict, Any
-from .models import Message, MessageStore
+from typing import Any
+
+from .models import MessageStore
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,8 @@ class ContextBuilder:
     def build_context(
         self,
         chat_id: str,
-        current_message: Dict[str, Any]
-    ) -> List[Dict[str, str]]:
+        current_message: dict[str, Any]
+    ) -> list[dict[str, str]]:
         """
         Build conversation context for the LLM.
 

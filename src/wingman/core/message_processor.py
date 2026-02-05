@@ -2,15 +2,17 @@
 
 import logging
 import time
-from typing import Callable, Coroutine, Dict, Any, Optional
+from collections.abc import Callable, Coroutine
+from typing import Any
 
-from .memory.models import MessageStore, Message
-from .memory.context import ContextBuilder
-from .safety import RateLimiter, CooldownManager, QuietHoursChecker, TriggerDetector
+from wingman.config.personality import RoleBasedPromptBuilder, get_personality_prompt
+from wingman.config.registry import ContactProfile, ContactRegistry, GroupRegistry
+
 from .llm.client import LLMClient
-from .policy import PolicyEvaluator, MessageContext
-from wingman.config.personality import get_personality_prompt, RoleBasedPromptBuilder
-from wingman.config.registry import ContactRegistry, GroupRegistry, ContactProfile
+from .memory.context import ContextBuilder
+from .memory.models import Message, MessageStore
+from .policy import PolicyEvaluator
+from .safety import CooldownManager, QuietHoursChecker, RateLimiter, TriggerDetector
 
 logger = logging.getLogger(__name__)
 
@@ -62,10 +64,10 @@ class MessageProcessor:
         self.prompt_builder = RoleBasedPromptBuilder(bot_name)
 
         # Track our own user ID per platform
-        self.self_ids: Dict[str, str] = {}
+        self.self_ids: dict[str, str] = {}
 
         # Message sender callback: (platform, chat_id, text) -> success
-        self._send_message: Optional[MessageSender] = None
+        self._send_message: MessageSender | None = None
 
     def set_self_id(self, user_id: str, platform: str = "whatsapp") -> None:
         """Set our own user ID for self-message detection."""
@@ -76,7 +78,7 @@ class MessageProcessor:
         """Set the message sender callback."""
         self._send_message = sender
 
-    async def process_message(self, data: Dict[str, Any]) -> None:
+    async def process_message(self, data: dict[str, Any]) -> None:
         """
         Process an incoming message through the full pipeline.
 
@@ -139,7 +141,6 @@ class MessageProcessor:
             return
 
         # 5. Evaluate policy rules
-        is_dm = not is_group
         is_reply_to_bot = self._is_reply_to_bot(data, platform)
 
         context = self.policy_evaluator.create_context(
@@ -198,7 +199,7 @@ class MessageProcessor:
 
         logger.info(f"Response sent via {platform}: {response[:50]}...")
 
-    def _check_safety_rules(self, chat_id: str) -> Optional[str]:
+    def _check_safety_rules(self, chat_id: str) -> str | None:
         """
         Check all safety rules.
 
@@ -223,7 +224,7 @@ class MessageProcessor:
 
         return None
 
-    def _is_reply_to_bot(self, data: Dict[str, Any], platform: str = "whatsapp") -> bool:
+    def _is_reply_to_bot(self, data: dict[str, Any], platform: str = "whatsapp") -> bool:
         """Check if the message is a reply to one of our messages."""
         quoted = data.get('quotedMessage')
         if not quoted:
@@ -245,9 +246,9 @@ class MessageProcessor:
     async def _generate_response(
         self,
         chat_id: str,
-        message_data: Dict[str, Any],
-        contact: Optional[ContactProfile] = None
-    ) -> Optional[str]:
+        message_data: dict[str, Any],
+        contact: ContactProfile | None = None
+    ) -> str | None:
         """Generate an LLM response for the message."""
         # Build context
         context = self.context_builder.build_context(chat_id, message_data)

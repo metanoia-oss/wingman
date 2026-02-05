@@ -3,9 +3,8 @@
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional
 
-from .ipc_handler import IPCHandler, IPCCommand
+from .ipc_handler import IPCCommand, IPCHandler
 
 logger = logging.getLogger(__name__)
 
@@ -13,12 +12,12 @@ logger = logging.getLogger(__name__)
 class NodeProcessManager:
     """Manages the Node.js listener subprocess."""
 
-    def __init__(self, node_dir: Path, auth_state_dir: Optional[Path] = None):
+    def __init__(self, node_dir: Path, auth_state_dir: Path | None = None):
         self.node_dir = node_dir
         self.auth_state_dir = auth_state_dir
-        self.process: Optional[asyncio.subprocess.Process] = None
-        self.ipc: Optional[IPCHandler] = None
-        self._stderr_task: Optional[asyncio.Task] = None
+        self.process: asyncio.subprocess.Process | None = None
+        self.ipc: IPCHandler | None = None
+        self._stderr_task: asyncio.Task | None = None
 
     async def start(self) -> IPCHandler:
         """Start the Node.js subprocess and return IPC handler."""

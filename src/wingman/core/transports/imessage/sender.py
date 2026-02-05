@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ class IMessageSender:
         recipient: str,
         text: str,
         is_group: bool = False,
-        chat_id: Optional[str] = None,
+        chat_id: str | None = None,
     ) -> bool:
         """
         Send an iMessage.

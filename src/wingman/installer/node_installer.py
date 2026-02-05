@@ -4,7 +4,6 @@ import logging
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class NodeInstaller:
         """
         self.target_dir = target_dir
 
-    def check_prerequisites(self) -> Tuple[bool, list[str]]:
+    def check_prerequisites(self) -> tuple[bool, list[str]]:
         """
         Check if Node.js and npm are installed and meet version requirements.
 
@@ -61,7 +60,7 @@ class NodeInstaller:
 
         return len(issues) == 0, issues
 
-    def _get_node_version(self) -> Optional[Tuple[int, ...]]:
+    def _get_node_version(self) -> tuple[int, ...] | None:
         """Get the installed Node.js version."""
         try:
             result = subprocess.run(
@@ -79,7 +78,7 @@ class NodeInstaller:
             pass
         return None
 
-    def _get_npm_version(self) -> Optional[Tuple[int, ...]]:
+    def _get_npm_version(self) -> tuple[int, ...] | None:
         """Get the installed npm version."""
         try:
             result = subprocess.run(
@@ -97,7 +96,7 @@ class NodeInstaller:
             pass
         return None
 
-    def get_bundled_source(self) -> Optional[Path]:
+    def get_bundled_source(self) -> Path | None:
         """
         Find the bundled node_listener source.
 

@@ -1,8 +1,7 @@
 """Per-chat cooldown management."""
 
-import time
 import logging
-from typing import Dict
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +13,8 @@ class CooldownManager:
 
     def __init__(self, default_cooldown_seconds: int = 60):
         self.default_cooldown = default_cooldown_seconds
-        self._last_reply: Dict[str, float] = {}
-        self._custom_cooldowns: Dict[str, int] = {}
+        self._last_reply: dict[str, float] = {}
+        self._custom_cooldowns: dict[str, int] = {}
 
     def set_cooldown(self, chat_id: str, seconds: int) -> None:
         """Set a custom cooldown for a specific chat."""

@@ -1,9 +1,7 @@
 """Bot personality configuration."""
 
-from typing import Optional
 
 from .registry import ContactTone
-
 
 SYSTEM_PROMPT = """You are Maximus Kekus, a witty and friendly AI assistant chatting on WhatsApp.
 
@@ -122,7 +120,7 @@ class RoleBasedPromptBuilder:
     def build_prompt(
         self,
         tone: ContactTone,
-        contact_name: Optional[str] = None,
+        contact_name: str | None = None,
     ) -> str:
         """
         Build a complete system prompt for a specific contact tone.

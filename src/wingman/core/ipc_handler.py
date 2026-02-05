@@ -1,9 +1,9 @@
 """IPC Handler for communication with Node.js subprocess."""
 
-import json
 import asyncio
+import json
 import logging
-from typing import Any, Callable, Coroutine, Optional
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
@@ -15,14 +15,14 @@ NULL_CHAR = '\0'
 class IPCMessage:
     """Message received from Node.js."""
     type: str
-    data: Optional[dict] = None
+    data: dict | None = None
 
 
 @dataclass
 class IPCCommand:
     """Command to send to Node.js."""
     action: str
-    payload: Optional[dict] = None
+    payload: dict | None = None
 
 
 class IPCHandler:
@@ -63,7 +63,7 @@ class IPCHandler:
             logger.error(f"Failed to send command: {e}")
             raise
 
-    async def send_message(self, jid: str, text: str, message_id: Optional[str] = None) -> None:
+    async def send_message(self, jid: str, text: str, message_id: str | None = None) -> None:
         """Convenience method to send a WhatsApp message."""
         await self.send_command(IPCCommand(
             action="send_message",

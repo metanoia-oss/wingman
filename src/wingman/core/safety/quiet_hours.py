@@ -1,8 +1,8 @@
 """Quiet hours enforcement."""
 
 import logging
-from datetime import datetime, time as dt_time
-from typing import Optional
+from datetime import datetime
+from datetime import time as dt_time
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class QuietHoursChecker:
         self.end_hour = end_hour
         self.enabled = enabled
 
-    def is_quiet_time(self, check_time: Optional[datetime] = None) -> bool:
+    def is_quiet_time(self, check_time: datetime | None = None) -> bool:
         """
         Check if the given time falls within quiet hours.
 

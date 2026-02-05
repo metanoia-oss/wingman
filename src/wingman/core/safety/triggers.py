@@ -1,8 +1,7 @@
 """Trigger word and mention detection."""
 
-import re
 import logging
-from typing import List, Set, Optional
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +15,10 @@ class TriggerDetector:
     def __init__(
         self,
         bot_name: str = "Maximus",
-        additional_triggers: Optional[List[str]] = None
+        additional_triggers: list[str] | None = None
     ):
         self.bot_name = bot_name.lower()
-        self.triggers: Set[str] = {self.bot_name}
+        self.triggers: set[str] = {self.bot_name}
 
         # Add common variations
         self.triggers.add(f"@{self.bot_name}")

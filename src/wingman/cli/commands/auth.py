@@ -1,7 +1,6 @@
 """wingman auth - WhatsApp authentication."""
 
 import asyncio
-import sys
 
 import typer
 from rich.console import Console
@@ -78,10 +77,8 @@ async def _run_auth(settings: Settings) -> None:
     transport.set_qr_code_handler(on_qr_code)
 
     # Start transport and wait for connection
-    import asyncio
-
     async def run_until_connected():
-        task = asyncio.create_task(transport.start())
+        asyncio.create_task(transport.start())
         try:
             # Wait for connection or timeout
             await asyncio.wait_for(connected.wait(), timeout=300)  # 5 minute timeout

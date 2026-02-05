@@ -1,10 +1,10 @@
 """Configuration settings loaded from environment or YAML."""
 
-import os
 import logging
-from pathlib import Path
+import os
 from dataclasses import dataclass, field
-from typing import Optional, Any, Dict
+from pathlib import Path
+from typing import Any
 
 import yaml
 from dotenv import load_dotenv
@@ -59,7 +59,7 @@ class Settings:
     _is_cli_mode: bool = False
 
     @classmethod
-    def load(cls, env_path: Optional[Path] = None, paths: Optional[WingmanPaths] = None) -> "Settings":
+    def load(cls, env_path: Path | None = None, paths: WingmanPaths | None = None) -> "Settings":
         """
         Load settings with fallback chain:
         1. YAML config file (if paths provided and config exists)
@@ -92,13 +92,12 @@ class Settings:
         config_file = paths.config_file
         logger.info(f"Loading settings from {config_file}")
 
-        with open(config_file, "r") as f:
+        with open(config_file) as f:
             config = yaml.safe_load(f) or {}
 
         # Parse config sections
         bot_config = config.get("bot", {})
         openai_config = config.get("openai", {})
-        personality_config = config.get("personality", {})
         safety_config = config.get("safety", {})
         quiet_hours_config = safety_config.get("quiet_hours", {})
         imessage_config = config.get("imessage", {})
@@ -152,7 +151,7 @@ class Settings:
         return settings
 
     @classmethod
-    def _load_from_env(cls, project_root: Path, env_path: Optional[Path] = None) -> "Settings":
+    def _load_from_env(cls, project_root: Path, env_path: Path | None = None) -> "Settings":
         """Load settings from environment variables (legacy mode)."""
         # Load .env file
         if env_path:
@@ -210,7 +209,7 @@ class Settings:
         return settings
 
     @classmethod
-    def _load_from_env_with_paths(cls, paths: WingmanPaths, env_path: Optional[Path] = None) -> "Settings":
+    def _load_from_env_with_paths(cls, paths: WingmanPaths, env_path: Path | None = None) -> "Settings":
         """Load settings from environment variables with XDG paths."""
         if env_path:
             load_dotenv(env_path)
@@ -280,7 +279,7 @@ class Settings:
 
         return errors
 
-    def to_yaml_dict(self) -> Dict[str, Any]:
+    def to_yaml_dict(self) -> dict[str, Any]:
         """Convert settings to a dictionary suitable for YAML serialization."""
         return {
             "bot": {

@@ -1,7 +1,6 @@
 """wingman start - Start the bot."""
 
 import asyncio
-import sys
 
 import typer
 from rich.console import Console

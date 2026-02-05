@@ -1,15 +1,12 @@
 """wingman init - Interactive setup wizard."""
 
-import sys
-from pathlib import Path
 
 import typer
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from wingman.config.paths import WingmanPaths
 from wingman.cli.wizard import SetupWizard
+from wingman.config.paths import WingmanPaths
 
 console = Console()
 

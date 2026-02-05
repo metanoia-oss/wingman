@@ -5,20 +5,20 @@ import logging
 import signal
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
 
-from wingman.config.settings import Settings
 from wingman.config.registry import ContactRegistry, GroupRegistry
-from .message_processor import MessageProcessor
-from .memory.models import MessageStore
+from wingman.config.settings import Settings
+
 from .llm.client import LLMClient
+from .memory.models import MessageStore
+from .message_processor import MessageProcessor
 from .policy import PolicyEvaluator
 from .transports import (
-    Platform,
-    MessageEvent,
     BaseTransport,
-    WhatsAppTransport,
     IMessageTransport,
+    MessageEvent,
+    Platform,
+    WhatsAppTransport,
 )
 
 logger = logging.getLogger(__name__)
@@ -87,8 +87,8 @@ class MultiTransportAgent:
         self.processor.set_sender(self._send_message)
 
         # Transports
-        self.transports: Dict[Platform, BaseTransport] = {}
-        self._transport_tasks: List[asyncio.Task] = []
+        self.transports: dict[Platform, BaseTransport] = {}
+        self._transport_tasks: list[asyncio.Task] = []
         self._shutdown_event = asyncio.Event()
 
     async def _send_message(self, platform: str, chat_id: str, text: str) -> bool:
@@ -223,7 +223,7 @@ class WhatsAppAgent(MultiTransportAgent):
         super().__init__(settings)
 
 
-async def run_agent(settings: Optional[Settings] = None) -> None:
+async def run_agent(settings: Settings | None = None) -> None:
     """Run the agent with provided settings."""
     # Load settings if not provided
     if settings is None:

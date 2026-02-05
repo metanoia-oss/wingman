@@ -6,8 +6,6 @@ import signal
 import subprocess
 import sys
 import time
-from pathlib import Path
-from typing import Optional
 
 from wingman.config.paths import WingmanPaths
 
@@ -55,14 +53,14 @@ class DaemonManager:
         else:
             return self._is_pidfile_running()
 
-    def get_pid(self) -> Optional[int]:
+    def get_pid(self) -> int | None:
         """Get the PID of the running daemon."""
         if self._is_macos:
             return self._get_launchd_pid()
         else:
             return self._get_pidfile_pid()
 
-    def get_uptime(self) -> Optional[float]:
+    def get_uptime(self) -> float | None:
         """Get daemon uptime in seconds."""
         pid = self.get_pid()
         if pid is None:
@@ -201,7 +199,7 @@ class DaemonManager:
         )
         return result.returncode == 0
 
-    def _get_launchd_pid(self) -> Optional[int]:
+    def _get_launchd_pid(self) -> int | None:
         """Get PID from launchd."""
         result = subprocess.run(
             ["launchctl", "list", self.LAUNCHD_LABEL],
@@ -298,7 +296,7 @@ class DaemonManager:
             self.paths.pid_file.unlink(missing_ok=True)
             return False
 
-    def _get_pidfile_pid(self) -> Optional[int]:
+    def _get_pidfile_pid(self) -> int | None:
         """Get PID from PID file."""
         pid_file = self.paths.pid_file
         if not pid_file.exists():

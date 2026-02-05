@@ -1,11 +1,10 @@
 """SQLite database models and operations."""
 
-import sqlite3
 import logging
-from pathlib import Path
-from dataclasses import dataclass
-from typing import List, Optional
+import sqlite3
 from contextlib import contextmanager
+from dataclasses import dataclass
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -13,10 +12,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Message:
     """Represents a stored message."""
-    id: Optional[int]
+    id: int | None
     chat_id: str
     sender_id: str
-    sender_name: Optional[str]
+    sender_name: str | None
     text: str
     timestamp: float
     is_self: bool = False
@@ -102,7 +101,7 @@ class MessageStore:
         self,
         chat_id: str,
         limit: int = 30
-    ) -> List[Message]:
+    ) -> list[Message]:
         """
         Get recent messages from a chat.
 
@@ -144,7 +143,7 @@ class MessageStore:
         logger.debug(f"Retrieved {len(messages)} messages from {chat_id}")
         return messages
 
-    def get_last_sender(self, chat_id: str) -> Optional[str]:
+    def get_last_sender(self, chat_id: str) -> str | None:
         """
         Get the sender ID of the last message in a chat.
 
@@ -185,7 +184,7 @@ class MessageStore:
 
         return bool(row and row['is_self'])
 
-    def get_message_count(self, chat_id: Optional[str] = None) -> int:
+    def get_message_count(self, chat_id: str | None = None) -> int:
         """Get total message count, optionally filtered by chat."""
         with self._get_connection() as conn:
             if chat_id:

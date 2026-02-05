@@ -1,10 +1,8 @@
 """XDG-compliant path management for Wingman."""
 
-import os
 from pathlib import Path
-from typing import Optional
 
-from platformdirs import user_config_dir, user_data_dir, user_cache_dir
+from platformdirs import user_cache_dir, user_config_dir, user_data_dir
 
 
 class WingmanPaths:
@@ -23,9 +21,9 @@ class WingmanPaths:
 
     def __init__(
         self,
-        config_dir: Optional[Path] = None,
-        data_dir: Optional[Path] = None,
-        cache_dir: Optional[Path] = None,
+        config_dir: Path | None = None,
+        data_dir: Path | None = None,
+        cache_dir: Path | None = None,
     ):
         """
         Initialize Wingman paths.

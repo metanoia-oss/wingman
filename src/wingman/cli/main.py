@@ -4,7 +4,8 @@ import typer
 from rich.console import Console
 
 from wingman import __version__
-from .commands import init, auth, start, stop, status, logs, config, uninstall
+
+from .commands import auth, config, init, logs, start, status, stop, uninstall
 
 # Create main app
 app = typer.Typer(

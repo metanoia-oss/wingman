@@ -1,8 +1,6 @@
 """wingman config - Edit configuration."""
 
 import subprocess
-import sys
-from pathlib import Path
 
 import typer
 from rich.console import Console
@@ -82,7 +80,7 @@ def _show_config(paths: WingmanPaths) -> None:
         console.print("[yellow]Config file not found.[/yellow]")
         return
 
-    with open(config_file, "r") as f:
+    with open(config_file) as f:
         content = f.read()
 
     syntax = Syntax(content, "yaml", theme="monokai", line_numbers=True)

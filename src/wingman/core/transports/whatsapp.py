@@ -2,12 +2,12 @@
 
 import logging
 import time
+from collections.abc import Callable, Coroutine
 from pathlib import Path
-from typing import Callable, Coroutine, Optional
 
-from .base import BaseTransport, Platform, MessageEvent
-from ..process_manager import NodeProcessManager
 from ..ipc_handler import IPCHandler
+from ..process_manager import NodeProcessManager
+from .base import BaseTransport, MessageEvent, Platform
 
 logger = logging.getLogger(__name__)
 
@@ -18,23 +18,23 @@ class WhatsAppTransport(BaseTransport):
     Wraps the existing Node.js IPC communication.
     """
 
-    def __init__(self, node_dir: Path, auth_state_dir: Optional[Path] = None):
+    def __init__(self, node_dir: Path, auth_state_dir: Path | None = None):
         super().__init__()
         self._node_manager = NodeProcessManager(node_dir, auth_state_dir)
-        self._ipc: Optional[IPCHandler] = None
-        self._self_id: Optional[str] = None
+        self._ipc: IPCHandler | None = None
+        self._self_id: str | None = None
 
         # Callbacks for WhatsApp-specific events
-        self._on_connected: Optional[Callable[[str], Coroutine]] = None
-        self._on_disconnected: Optional[Callable[[], Coroutine]] = None
-        self._on_qr_code: Optional[Callable[[], Coroutine]] = None
+        self._on_connected: Callable[[str], Coroutine] | None = None
+        self._on_disconnected: Callable[[], Coroutine] | None = None
+        self._on_qr_code: Callable[[], Coroutine] | None = None
 
     @property
     def platform(self) -> Platform:
         return Platform.WHATSAPP
 
     @property
-    def self_id(self) -> Optional[str]:
+    def self_id(self) -> str | None:
         """Get the connected WhatsApp user ID."""
         return self._self_id
 

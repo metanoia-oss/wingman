@@ -1,18 +1,18 @@
 """Configuration module for Wingman."""
 
-from .settings import Settings
 from .paths import WingmanPaths
-from .personality import SYSTEM_PROMPT, get_personality_prompt, RoleBasedPromptBuilder
+from .personality import SYSTEM_PROMPT, RoleBasedPromptBuilder, get_personality_prompt
 from .registry import (
-    ContactRegistry,
-    GroupRegistry,
     ContactProfile,
-    GroupConfig,
+    ContactRegistry,
     ContactRole,
     ContactTone,
     GroupCategory,
+    GroupConfig,
+    GroupRegistry,
     ReplyPolicy,
 )
+from .settings import Settings
 
 __all__ = [
     'Settings',

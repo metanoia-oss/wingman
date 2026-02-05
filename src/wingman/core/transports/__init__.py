@@ -1,8 +1,8 @@
 """Transport abstraction layer for multi-platform messaging."""
 
-from .base import Platform, MessageEvent, BaseTransport, MessageHandler
-from .whatsapp import WhatsAppTransport
+from .base import BaseTransport, MessageEvent, MessageHandler, Platform
 from .imessage import IMessageTransport
+from .whatsapp import WhatsAppTransport
 
 __all__ = [
     "Platform",

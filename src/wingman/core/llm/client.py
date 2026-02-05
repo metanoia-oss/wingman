@@ -1,7 +1,7 @@
 """OpenAI API client wrapper."""
 
 import logging
-from typing import List, Dict, Optional
+
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
@@ -25,9 +25,9 @@ class LLMClient:
     async def generate_response(
         self,
         system_prompt: str,
-        messages: List[Dict[str, str]],
-        language_instruction: Optional[str] = None
-    ) -> Optional[str]:
+        messages: list[dict[str, str]],
+        language_instruction: str | None = None
+    ) -> str | None:
         """
         Generate a response using the OpenAI API.
 

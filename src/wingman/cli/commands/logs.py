@@ -1,7 +1,6 @@
 """wingman logs - View bot logs."""
 
 import subprocess
-import sys
 
 import typer
 from rich.console import Console

@@ -4,9 +4,9 @@ import asyncio
 import logging
 import sqlite3
 import time
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Coroutine, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class IMessageData:
     text: str
     handle_id: str  # Phone number or email
     chat_id: str  # Chat identifier
-    chat_name: Optional[str]  # Group name if available
+    chat_name: str | None  # Group name if available
     timestamp: float  # Unix timestamp
     is_from_me: bool
     is_group: bool
@@ -39,14 +39,14 @@ class IMessageDBListener:
 
     def __init__(
         self,
-        db_path: Optional[Path] = None,
+        db_path: Path | None = None,
         poll_interval: float = 2.0,
     ):
         self._db_path = db_path or self.DEFAULT_DB_PATH
         self._poll_interval = poll_interval
         self._last_rowid = 0
         self._running = False
-        self._message_callback: Optional[Callable[[IMessageData], Coroutine]] = None
+        self._message_callback: Callable[[IMessageData], Coroutine] | None = None
 
     def set_message_callback(
         self,
@@ -116,7 +116,7 @@ class IMessageDBListener:
             logger.error(f"Failed to get max ROWID: {e}")
             return 0
 
-    def _fetch_new_messages(self) -> List[IMessageData]:
+    def _fetch_new_messages(self) -> list[IMessageData]:
         """Fetch messages newer than last_rowid."""
         messages = []
 
@@ -180,7 +180,7 @@ class IMessageDBListener:
 
         return messages
 
-    def _extract_text(self, row: sqlite3.Row) -> Optional[str]:
+    def _extract_text(self, row: sqlite3.Row) -> str | None:
         """
         Extract message text from a database row.
 
@@ -203,7 +203,7 @@ class IMessageDBListener:
 
         return None
 
-    def _parse_attributed_body(self, blob: bytes) -> Optional[str]:
+    def _parse_attributed_body(self, blob: bytes) -> str | None:
         """
         Parse NSAttributedString blob from attributedBody column.
 
