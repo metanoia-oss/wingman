@@ -40,7 +40,7 @@ class MessageProcessor:
         default_cooldown: int = 60,
         quiet_start: int = 0,
         quiet_end: int = 6,
-        context_window: int = 30
+        context_window: int = 30,
     ):
         self.store = store
         self.llm = llm
@@ -88,14 +88,14 @@ class MessageProcessor:
         3. Check for triggers
         4. Generate and send response
         """
-        chat_id = data.get('chatId', '')
-        sender_id = data.get('senderId', '')
-        sender_name = data.get('senderName')
-        text = data.get('text', '')
-        timestamp = data.get('timestamp', time.time())
-        is_group = data.get('isGroup', False)
-        is_self = data.get('isSelf', False)
-        platform = data.get('platform', 'whatsapp')
+        chat_id = data.get("chatId", "")
+        sender_id = data.get("senderId", "")
+        sender_name = data.get("senderName")
+        text = data.get("text", "")
+        timestamp = data.get("timestamp", time.time())
+        is_group = data.get("isGroup", False)
+        is_self = data.get("isSelf", False)
+        platform = data.get("platform", "whatsapp")
 
         logger.info(
             f"Processing message: platform={platform}, chat={chat_id[:20]}..., "
@@ -112,7 +112,7 @@ class MessageProcessor:
             text=text,
             timestamp=timestamp,
             is_self=is_self,
-            platform=platform
+            platform=platform,
         )
         self.store.store_message(message)
 
@@ -160,7 +160,9 @@ class MessageProcessor:
             logger.debug(f"Policy decision: no response (reason: {decision.reason})")
             return
 
-        logger.info(f"Responding to message (policy: {decision.reason}, action: {decision.action.value})")
+        logger.info(
+            f"Responding to message (policy: {decision.reason}, action: {decision.action.value})"
+        )
 
         # 6. Generate response with role-based prompt
         response = await self._generate_response(chat_id, data, contact)
@@ -193,7 +195,7 @@ class MessageProcessor:
             text=response,
             timestamp=time.time(),
             is_self=True,
-            platform=platform
+            platform=platform,
         )
         self.store.store_message(bot_message)
 
@@ -226,11 +228,11 @@ class MessageProcessor:
 
     def _is_reply_to_bot(self, data: dict[str, Any], platform: str = "whatsapp") -> bool:
         """Check if the message is a reply to one of our messages."""
-        quoted = data.get('quotedMessage')
+        quoted = data.get("quotedMessage")
         if not quoted:
             return False
 
-        quoted_sender = quoted.get('senderId', '')
+        quoted_sender = quoted.get("senderId", "")
 
         # Check if quoted message is from us (platform-specific self ID)
         self_id = self.self_ids.get(platform)
@@ -244,17 +246,14 @@ class MessageProcessor:
         return False
 
     async def _generate_response(
-        self,
-        chat_id: str,
-        message_data: dict[str, Any],
-        contact: ContactProfile | None = None
+        self, chat_id: str, message_data: dict[str, Any], contact: ContactProfile | None = None
     ) -> str | None:
         """Generate an LLM response for the message."""
         # Build context
         context = self.context_builder.build_context(chat_id, message_data)
 
         # Detect language
-        text = message_data.get('text', '')
+        text = message_data.get("text", "")
         language = self.context_builder.detect_language(text)
         language_instruction = self.context_builder.get_language_instruction(language)
 
@@ -272,9 +271,7 @@ class MessageProcessor:
 
         # Generate response
         response = await self.llm.generate_response(
-            system_prompt=system_prompt,
-            messages=context,
-            language_instruction=language_instruction
+            system_prompt=system_prompt, messages=context, language_instruction=language_instruction
         )
 
         return response

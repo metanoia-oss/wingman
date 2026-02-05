@@ -25,11 +25,13 @@ def init(
     Sets up OpenAI API key, bot personality, safety settings,
     and installs the WhatsApp listener.
     """
-    console.print(Panel.fit(
-        "[bold blue]Welcome to Wingman![/bold blue]\n\n"
-        "This wizard will help you set up your personal AI chat agent.",
-        border_style="blue",
-    ))
+    console.print(
+        Panel.fit(
+            "[bold blue]Welcome to Wingman![/bold blue]\n\n"
+            "This wizard will help you set up your personal AI chat agent.",
+            border_style="blue",
+        )
+    )
     console.print()
 
     paths = WingmanPaths()
@@ -51,13 +53,15 @@ def init(
         success = wizard.run()
         if success:
             console.print()
-            console.print(Panel.fit(
-                "[bold green]Setup complete![/bold green]\n\n"
-                "Next steps:\n"
-                "  1. Run [bold]wingman auth[/bold] to connect WhatsApp\n"
-                "  2. Run [bold]wingman start[/bold] to start the bot",
-                border_style="green",
-            ))
+            console.print(
+                Panel.fit(
+                    "[bold green]Setup complete![/bold green]\n\n"
+                    "Next steps:\n"
+                    "  1. Run [bold]wingman auth[/bold] to connect WhatsApp\n"
+                    "  2. Run [bold]wingman start[/bold] to start the bot",
+                    border_style="green",
+                )
+            )
         else:
             console.print()
             console.print("[red]Setup incomplete. Please try again.[/red]")

@@ -83,8 +83,8 @@ class WhatsAppTransport(BaseTransport):
 
         async def on_connected(data: dict) -> None:
             """Handle WhatsApp connection."""
-            user = data.get('user', {})
-            user_id = user.get('id', '')
+            user = data.get("user", {})
+            user_id = user.get("id", "")
             self._self_id = user_id
             logger.info(f"WhatsApp connected: {user_id}")
             if self._on_connected:
@@ -114,8 +114,8 @@ class WhatsAppTransport(BaseTransport):
 
         async def on_send_result(data: dict) -> None:
             """Handle send result."""
-            success = data.get('success', False)
-            jid = data.get('jid', '')
+            success = data.get("success", False)
+            jid = data.get("jid", "")
             if success:
                 logger.debug(f"Message sent to {jid}")
             else:
@@ -128,29 +128,29 @@ class WhatsAppTransport(BaseTransport):
             logger.debug("Pong received")
 
         # Register all handlers
-        self._ipc.register_handler('message', on_message)
-        self._ipc.register_handler('connected', on_connected)
-        self._ipc.register_handler('disconnected', on_disconnected)
-        self._ipc.register_handler('qr_code', on_qr_code)
-        self._ipc.register_handler('error', on_error)
-        self._ipc.register_handler('logged_out', on_logged_out)
-        self._ipc.register_handler('send_result', on_send_result)
-        self._ipc.register_handler('starting', on_starting)
-        self._ipc.register_handler('pong', on_pong)
+        self._ipc.register_handler("message", on_message)
+        self._ipc.register_handler("connected", on_connected)
+        self._ipc.register_handler("disconnected", on_disconnected)
+        self._ipc.register_handler("qr_code", on_qr_code)
+        self._ipc.register_handler("error", on_error)
+        self._ipc.register_handler("logged_out", on_logged_out)
+        self._ipc.register_handler("send_result", on_send_result)
+        self._ipc.register_handler("starting", on_starting)
+        self._ipc.register_handler("pong", on_pong)
 
     def _convert_to_event(self, data: dict) -> MessageEvent:
         """Convert IPC message data to MessageEvent."""
         return MessageEvent(
-            chat_id=data.get('chatId', ''),
-            sender_id=data.get('senderId', ''),
-            text=data.get('text', ''),
-            timestamp=data.get('timestamp', time.time()),
+            chat_id=data.get("chatId", ""),
+            sender_id=data.get("senderId", ""),
+            text=data.get("text", ""),
+            timestamp=data.get("timestamp", time.time()),
             platform=Platform.WHATSAPP,
-            sender_name=data.get('senderName'),
-            is_group=data.get('isGroup', False),
-            is_self=data.get('isSelf', False),
+            sender_name=data.get("senderName"),
+            is_group=data.get("isGroup", False),
+            is_self=data.get("isSelf", False),
             raw_data=data,
-            quoted_message=data.get('quotedMessage'),
+            quoted_message=data.get("quotedMessage"),
         )
 
     async def stop(self) -> None:

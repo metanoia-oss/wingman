@@ -11,11 +11,7 @@ class LLMClient:
     """Async OpenAI API client for generating responses."""
 
     def __init__(
-        self,
-        api_key: str,
-        model: str = "gpt-4o",
-        max_tokens: int = 150,
-        temperature: float = 0.8
+        self, api_key: str, model: str = "gpt-4o", max_tokens: int = 150, temperature: float = 0.8
     ):
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = model
@@ -26,7 +22,7 @@ class LLMClient:
         self,
         system_prompt: str,
         messages: list[dict[str, str]],
-        language_instruction: str | None = None
+        language_instruction: str | None = None,
     ) -> str | None:
         """
         Generate a response using the OpenAI API.
@@ -46,10 +42,7 @@ class LLMClient:
                 full_system += f"\n\n{language_instruction}"
 
             # Prepare messages for API
-            api_messages = [
-                {"role": "system", "content": full_system},
-                *messages
-            ]
+            api_messages = [{"role": "system", "content": full_system}, *messages]
 
             logger.debug(f"Sending request to {self.model} with {len(messages)} context messages")
 
@@ -57,7 +50,7 @@ class LLMClient:
                 model=self.model,
                 messages=api_messages,
                 max_tokens=self.max_tokens,
-                temperature=self.temperature
+                temperature=self.temperature,
             )
 
             if response.choices and response.choices[0].message.content:
@@ -76,9 +69,7 @@ class LLMClient:
         """Check if the API is accessible."""
         try:
             response = await self.client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": "Hi"}],
-                max_tokens=5
+                model=self.model, messages=[{"role": "user", "content": "Hi"}], max_tokens=5
             )
             return bool(response.choices)
         except Exception as e:

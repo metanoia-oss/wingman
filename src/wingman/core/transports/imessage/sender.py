@@ -50,13 +50,13 @@ class IMessageSender:
         escaped_text = self._escape_for_applescript(text)
         escaped_recipient = self._escape_for_applescript(recipient)
 
-        script = f'''
+        script = f"""
             tell application "Messages"
                 set targetService to 1st account whose service type = iMessage
                 set targetBuddy to participant "{escaped_recipient}" of targetService
                 send "{escaped_text}" to targetBuddy
             end tell
-        '''
+        """
 
         return await self._run_applescript(script)
 
@@ -66,19 +66,19 @@ class IMessageSender:
         escaped_chat_id = self._escape_for_applescript(chat_id)
 
         # Try to find the chat by its identifier
-        script = f'''
+        script = f"""
             tell application "Messages"
                 set targetChat to a reference to chat id "{escaped_chat_id}"
                 send "{escaped_text}" to targetChat
             end tell
-        '''
+        """
 
         success = await self._run_applescript(script)
 
         if not success:
             # Fallback: try finding by chat name
             logger.debug("Retrying with chat name lookup")
-            script_fallback = f'''
+            script_fallback = f"""
                 tell application "Messages"
                     set allChats to every chat
                     repeat with aChat in allChats
@@ -88,7 +88,7 @@ class IMessageSender:
                         end if
                     end repeat
                 end tell
-            '''
+            """
             success = await self._run_applescript(script_fallback)
 
         return success
@@ -98,21 +98,20 @@ class IMessageSender:
         try:
             # Run osascript in a subprocess
             process = await asyncio.create_subprocess_exec(
-                'osascript', '-e', script,
+                "osascript",
+                "-e",
+                script,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
 
-            stdout, stderr = await asyncio.wait_for(
-                process.communicate(),
-                timeout=10.0
-            )
+            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=10.0)
 
             if process.returncode == 0:
                 logger.debug("AppleScript executed successfully")
                 return True
             else:
-                error_msg = stderr.decode('utf-8').strip()
+                error_msg = stderr.decode("utf-8").strip()
                 logger.error(f"AppleScript error: {error_msg}")
                 return False
 
@@ -130,31 +129,33 @@ class IMessageSender:
         AppleScript uses backslash for escaping within double-quoted strings.
         """
         # Escape backslashes first, then quotes
-        text = text.replace('\\', '\\\\')
+        text = text.replace("\\", "\\\\")
         text = text.replace('"', '\\"')
-        text = text.replace('\n', '\\n')
-        text = text.replace('\r', '\\r')
-        text = text.replace('\t', '\\t')
+        text = text.replace("\n", "\\n")
+        text = text.replace("\r", "\\r")
+        text = text.replace("\t", "\\t")
         return text
 
     async def check_messages_app(self) -> bool:
         """Check if Messages.app is available and accessible."""
-        script = '''
+        script = """
             tell application "System Events"
                 return exists application process "Messages"
             end tell
-        '''
+        """
 
         try:
             process = await asyncio.create_subprocess_exec(
-                'osascript', '-e', script,
+                "osascript",
+                "-e",
+                script,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
 
             stdout, _ = await process.communicate()
-            result = stdout.decode('utf-8').strip().lower()
-            return result == 'true'
+            result = stdout.decode("utf-8").strip().lower()
+            return result == "true"
 
         except Exception as e:
             logger.error(f"Failed to check Messages.app: {e}")

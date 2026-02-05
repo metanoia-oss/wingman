@@ -53,13 +53,15 @@ def start(
 
     if foreground:
         # Run in foreground
-        console.print(Panel.fit(
-            "[bold blue]Starting Wingman[/bold blue]\n\n"
-            f"Bot name: {settings.bot_name}\n"
-            f"Model: {settings.openai_model}\n\n"
-            "Press Ctrl+C to stop.",
-            border_style="blue",
-        ))
+        console.print(
+            Panel.fit(
+                "[bold blue]Starting Wingman[/bold blue]\n\n"
+                f"Bot name: {settings.bot_name}\n"
+                f"Model: {settings.openai_model}\n\n"
+                "Press Ctrl+C to stop.",
+                border_style="blue",
+            )
+        )
         console.print()
 
         try:
@@ -75,6 +77,7 @@ def start(
 async def _run_foreground(settings: Settings) -> None:
     """Run the bot in foreground mode."""
     from wingman.core.agent import run_agent
+
     await run_agent(settings)
 
 

@@ -31,16 +31,13 @@ def setup_logging(log_dir: Path) -> None:
 
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler(sys.stderr)
-        ]
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stderr)],
     )
 
     # Reduce noise from some libraries
-    logging.getLogger('httpx').setLevel(logging.WARNING)
-    logging.getLogger('openai').setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("openai").setLevel(logging.WARNING)
 
 
 class MultiTransportAgent:
@@ -57,15 +54,14 @@ class MultiTransportAgent:
             api_key=settings.openai_api_key,
             model=settings.openai_model,
             max_tokens=settings.max_response_tokens,
-            temperature=settings.temperature
+            temperature=settings.temperature,
         )
 
         # Initialize config-driven registries
         self.contact_registry = ContactRegistry(settings.contacts_config)
         self.group_registry = GroupRegistry(settings.groups_config)
         self.policy_evaluator = PolicyEvaluator(
-            settings.policies_config,
-            bot_name=settings.bot_name
+            settings.policies_config, bot_name=settings.bot_name
         )
 
         # Initialize message processor (transport-agnostic)
@@ -80,7 +76,7 @@ class MultiTransportAgent:
             default_cooldown=settings.default_cooldown_seconds,
             quiet_start=settings.quiet_hours_start,
             quiet_end=settings.quiet_hours_end,
-            context_window=settings.context_window_size
+            context_window=settings.context_window_size,
         )
 
         # Set up message sender callback
@@ -109,15 +105,15 @@ class MultiTransportAgent:
         """Handle incoming message from any transport."""
         # Convert MessageEvent to dict format expected by processor
         data = {
-            'chatId': event.chat_id,
-            'senderId': event.sender_id,
-            'senderName': event.sender_name,
-            'text': event.text,
-            'timestamp': event.timestamp,
-            'isGroup': event.is_group,
-            'isSelf': event.is_self,
-            'platform': event.platform.value,
-            'quotedMessage': event.quoted_message,
+            "chatId": event.chat_id,
+            "senderId": event.sender_id,
+            "senderName": event.sender_name,
+            "text": event.text,
+            "timestamp": event.timestamp,
+            "isGroup": event.is_group,
+            "isSelf": event.is_self,
+            "platform": event.platform.value,
+            "quotedMessage": event.quoted_message,
         }
         await self.processor.process_message(data)
 
@@ -129,8 +125,7 @@ class MultiTransportAgent:
 
         # Initialize WhatsApp transport
         whatsapp = WhatsAppTransport(
-            self.settings.node_dir,
-            auth_state_dir=self.settings.auth_state_dir
+            self.settings.node_dir, auth_state_dir=self.settings.auth_state_dir
         )
         whatsapp.set_message_handler(self._on_message)
         whatsapp.set_connected_handler(self._on_whatsapp_connected)
@@ -138,9 +133,7 @@ class MultiTransportAgent:
 
         # Initialize iMessage transport if enabled
         if self.settings.imessage_enabled:
-            imessage = IMessageTransport(
-                poll_interval=self.settings.imessage_poll_interval
-            )
+            imessage = IMessageTransport(poll_interval=self.settings.imessage_poll_interval)
 
             # Check if iMessage is available on this system
             if await imessage.check_availability():
@@ -157,8 +150,7 @@ class MultiTransportAgent:
         for platform, transport in self.transports.items():
             logger.info(f"Starting {platform.value} transport...")
             task = asyncio.create_task(
-                self._run_transport(platform, transport),
-                name=f"transport_{platform.value}"
+                self._run_transport(platform, transport), name=f"transport_{platform.value}"
             )
             self._transport_tasks.append(task)
 

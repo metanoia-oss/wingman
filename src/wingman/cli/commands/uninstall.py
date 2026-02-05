@@ -62,6 +62,7 @@ def uninstall(
 
     # Stop daemon first
     from wingman.daemon import DaemonManager
+
     daemon = DaemonManager(paths)
 
     if daemon.is_running():

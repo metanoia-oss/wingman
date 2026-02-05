@@ -54,6 +54,7 @@ class SetupWizard:
 
         # Python check (always passes if we're running)
         import sys
+
         python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
         self.console.print(f"  [green]✓[/green] Python {python_version}")
 
@@ -88,8 +89,7 @@ class SetupWizard:
         self.console.print()
 
         api_key = questionary.password(
-            "Enter your OpenAI API key:",
-            instruction="(starts with 'sk-')"
+            "Enter your OpenAI API key:", instruction="(starts with 'sk-')"
         ).ask()
 
         if not api_key:
@@ -97,13 +97,12 @@ class SetupWizard:
 
         # Validate API key format
         if not api_key.startswith("sk-"):
-            self.console.print("[yellow]Warning: API key doesn't start with 'sk-'. Proceeding anyway.[/yellow]")
+            self.console.print(
+                "[yellow]Warning: API key doesn't start with 'sk-'. Proceeding anyway.[/yellow]"
+            )
 
         # Optional: Test API key
-        test = questionary.confirm(
-            "Test API key?",
-            default=True
-        ).ask()
+        test = questionary.confirm("Test API key?", default=True).ask()
 
         if test:
             with Progress(
@@ -117,10 +116,7 @@ class SetupWizard:
                     self.console.print("  [green]✓[/green] API key is valid")
                 else:
                     self.console.print("  [red]✗[/red] API key test failed")
-                    proceed = questionary.confirm(
-                        "Continue anyway?",
-                        default=False
-                    ).ask()
+                    proceed = questionary.confirm("Continue anyway?", default=False).ask()
                     if not proceed:
                         return None
 
@@ -131,6 +127,7 @@ class SetupWizard:
         """Test if the OpenAI API key is valid."""
         try:
             from openai import OpenAI
+
             client = OpenAI(api_key=api_key)
             # Simple test - list models
             client.models.list()
@@ -143,25 +140,30 @@ class SetupWizard:
         self.console.print("[bold]Step 3/5: Bot Personality[/bold]")
         self.console.print()
 
-        bot_name = questionary.text(
-            "What should your bot be called?",
-            default="Wingman"
-        ).ask() or "Wingman"
+        bot_name = (
+            questionary.text("What should your bot be called?", default="Wingman").ask()
+            or "Wingman"
+        )
 
-        personality_desc = questionary.text(
-            "Describe your bot's personality:",
-            default="Witty and helpful assistant"
-        ).ask() or "Witty and helpful assistant"
+        personality_desc = (
+            questionary.text(
+                "Describe your bot's personality:", default="Witty and helpful assistant"
+            ).ask()
+            or "Witty and helpful assistant"
+        )
 
-        tone = questionary.select(
-            "Default tone:",
-            choices=[
-                questionary.Choice("casual - Relaxed and friendly", value="casual"),
-                questionary.Choice("friendly - Warm and approachable", value="friendly"),
-                questionary.Choice("professional - Polite and formal", value="professional"),
-            ],
-            default="casual"
-        ).ask() or "casual"
+        tone = (
+            questionary.select(
+                "Default tone:",
+                choices=[
+                    questionary.Choice("casual - Relaxed and friendly", value="casual"),
+                    questionary.Choice("friendly - Warm and approachable", value="friendly"),
+                    questionary.Choice("professional - Polite and formal", value="professional"),
+                ],
+                default="casual",
+            ).ask()
+            or "casual"
+        )
 
         self.console.print()
         return bot_name, personality_desc, tone
@@ -171,26 +173,27 @@ class SetupWizard:
         self.console.print("[bold]Step 4/5: Safety Settings[/bold]")
         self.console.print()
 
-        max_replies = questionary.text(
-            "Max replies per hour:",
-            default="30",
-            validate=lambda x: x.isdigit() and int(x) > 0
-        ).ask() or "30"
+        max_replies = (
+            questionary.text(
+                "Max replies per hour:", default="30", validate=lambda x: x.isdigit() and int(x) > 0
+            ).ask()
+            or "30"
+        )
 
-        enable_quiet_hours = questionary.confirm(
-            "Enable quiet hours?",
-            default=True
-        ).ask()
+        enable_quiet_hours = questionary.confirm("Enable quiet hours?", default=True).ask()
 
         quiet_start = 0
         quiet_end = 6
 
         if enable_quiet_hours:
-            quiet_range = questionary.text(
-                "Quiet hours (start-end, 24h format):",
-                default="0-6",
-                validate=lambda x: bool(re.match(r"^\d{1,2}-\d{1,2}$", x))
-            ).ask() or "0-6"
+            quiet_range = (
+                questionary.text(
+                    "Quiet hours (start-end, 24h format):",
+                    default="0-6",
+                    validate=lambda x: bool(re.match(r"^\d{1,2}-\d{1,2}$", x)),
+                ).ask()
+                or "0-6"
+            )
 
             parts = quiet_range.split("-")
             quiet_start = int(parts[0])
@@ -239,12 +242,7 @@ class SetupWizard:
         return success
 
     def _generate_configs(
-        self,
-        api_key: str,
-        bot_name: str,
-        personality_desc: str,
-        tone: str,
-        safety_config: dict
+        self, api_key: str, bot_name: str, personality_desc: str, tone: str, safety_config: dict
     ) -> None:
         """Generate configuration files."""
         # Ensure directories exist
@@ -292,7 +290,7 @@ class SetupWizard:
                 "role": "unknown",
                 "tone": "neutral",
                 "allow_proactive": False,
-            }
+            },
         }
 
         # Remove the comment key (it was just for illustration)
@@ -304,8 +302,12 @@ class SetupWizard:
             f.write("# contacts:\n")
             f.write('#   "+14155551234@s.whatsapp.net":\n')
             f.write("#     name: John\n")
-            f.write("#     role: friend  # girlfriend, sister, friend, family, colleague, unknown\n")
-            f.write("#     tone: casual  # affectionate, loving, friendly, casual, sarcastic, neutral\n")
+            f.write(
+                "#     role: friend  # girlfriend, sister, friend, family, colleague, unknown\n"
+            )
+            f.write(
+                "#     tone: casual  # affectionate, loving, friendly, casual, sarcastic, neutral\n"
+            )
 
         # Groups config (template)
         groups_config = {
@@ -313,7 +315,7 @@ class SetupWizard:
             "defaults": {
                 "category": "unknown",
                 "reply_policy": "selective",
-            }
+            },
         }
 
         with open(self.paths.groups_config, "w") as f:
@@ -345,7 +347,7 @@ class SetupWizard:
             ],
             "fallback": {
                 "action": "selective",
-            }
+            },
         }
 
         with open(self.paths.policies_config, "w") as f:

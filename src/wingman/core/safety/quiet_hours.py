@@ -13,12 +13,7 @@ class QuietHoursChecker:
     Default: midnight (0:00) to 6:00 AM.
     """
 
-    def __init__(
-        self,
-        start_hour: int = 0,
-        end_hour: int = 6,
-        enabled: bool = True
-    ):
+    def __init__(self, start_hour: int = 0, end_hour: int = 6, enabled: bool = True):
         self.start_hour = start_hour
         self.end_hour = end_hour
         self.enabled = enabled

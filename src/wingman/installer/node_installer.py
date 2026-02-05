@@ -64,10 +64,7 @@ class NodeInstaller:
         """Get the installed Node.js version."""
         try:
             result = subprocess.run(
-                ["node", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                ["node", "--version"], capture_output=True, text=True, timeout=10
             )
             if result.returncode == 0:
                 # Parse version like "v20.10.0"
@@ -82,10 +79,7 @@ class NodeInstaller:
         """Get the installed npm version."""
         try:
             result = subprocess.run(
-                ["npm", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                ["npm", "--version"], capture_output=True, text=True, timeout=10
             )
             if result.returncode == 0:
                 # Parse version like "10.2.3"
@@ -119,6 +113,7 @@ class NodeInstaller:
 
         # Try shared data location (pip installed with pyproject.toml shared-data)
         import sys
+
         for path in [
             Path(sys.prefix) / "share" / "wingman" / "node_listener",
             Path.home() / ".local" / "share" / "wingman" / "node_listener",
@@ -143,6 +138,7 @@ class NodeInstaller:
         Returns:
             True if installation succeeded
         """
+
         def report(step: str, message: str):
             logger.info(f"[{step}] {message}")
             if progress_callback:
@@ -175,7 +171,7 @@ class NodeInstaller:
                 cwd=str(self.target_dir),
                 capture_output=True,
                 text=True,
-                timeout=300  # 5 minute timeout
+                timeout=300,  # 5 minute timeout
             )
             if result.returncode != 0:
                 report("error", f"npm install failed: {result.stderr}")
@@ -196,7 +192,7 @@ class NodeInstaller:
                 cwd=str(self.target_dir),
                 capture_output=True,
                 text=True,
-                timeout=120  # 2 minute timeout
+                timeout=120,  # 2 minute timeout
             )
             if result.returncode != 0:
                 report("error", f"npm run build failed: {result.stderr}")
@@ -238,9 +234,9 @@ class NodeInstaller:
     def is_installed(self) -> bool:
         """Check if the node_listener is already installed and built."""
         return (
-            self.target_dir.exists() and
-            (self.target_dir / "package.json").exists() and
-            (self.target_dir / "dist" / "index.js").exists()
+            self.target_dir.exists()
+            and (self.target_dir / "package.json").exists()
+            and (self.target_dir / "dist" / "index.js").exists()
         )
 
     def get_version_info(self) -> dict:

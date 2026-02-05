@@ -44,6 +44,7 @@ def status() -> None:
 
     # Running status
     from wingman.daemon import DaemonManager
+
     daemon = DaemonManager(paths)
 
     if daemon.is_running():

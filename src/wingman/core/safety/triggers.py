@@ -12,11 +12,7 @@ class TriggerDetector:
     cause the bot to respond.
     """
 
-    def __init__(
-        self,
-        bot_name: str = "Maximus",
-        additional_triggers: list[str] | None = None
-    ):
+    def __init__(self, bot_name: str = "Maximus", additional_triggers: list[str] | None = None):
         self.bot_name = bot_name.lower()
         self.triggers: set[str] = {self.bot_name}
 
@@ -35,7 +31,7 @@ class TriggerDetector:
         """Compile regex patterns for trigger matching."""
         # Pattern for @mentions (handles WhatsApp mention format)
         escaped_triggers = [re.escape(t) for t in self.triggers]
-        pattern = r'\b(' + '|'.join(escaped_triggers) + r')\b'
+        pattern = r"\b(" + "|".join(escaped_triggers) + r")\b"
         self._trigger_pattern = re.compile(pattern, re.IGNORECASE)
 
     def add_trigger(self, trigger: str) -> None:
@@ -89,11 +85,7 @@ class TriggerDetector:
         return False
 
     def should_respond(
-        self,
-        text: str,
-        is_group: bool,
-        is_dm: bool = False,
-        is_reply_to_bot: bool = False
+        self, text: str, is_group: bool, is_dm: bool = False, is_reply_to_bot: bool = False
     ) -> tuple[bool, str]:
         """
         Determine if the bot should respond to this message.

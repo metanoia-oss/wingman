@@ -69,9 +69,7 @@ class DaemonManager:
         try:
             # Use ps to get process start time
             result = subprocess.run(
-                ["ps", "-o", "etime=", "-p", str(pid)],
-                capture_output=True,
-                text=True
+                ["ps", "-o", "etime=", "-p", str(pid)], capture_output=True, text=True
             )
             if result.returncode == 0:
                 etime = result.stdout.strip()
@@ -160,14 +158,8 @@ class DaemonManager:
         plist_path.write_text(self._get_plist_content())
 
         # Load and start the agent
-        subprocess.run(
-            ["launchctl", "load", str(plist_path)],
-            check=True
-        )
-        subprocess.run(
-            ["launchctl", "start", self.LAUNCHD_LABEL],
-            check=True
-        )
+        subprocess.run(["launchctl", "load", str(plist_path)], check=True)
+        subprocess.run(["launchctl", "start", self.LAUNCHD_LABEL], check=True)
 
         logger.info(f"Daemon started via launchd: {self.LAUNCHD_LABEL}")
 
@@ -176,35 +168,25 @@ class DaemonManager:
         plist_path = self.paths.launchd_plist
 
         # Stop the agent
-        subprocess.run(
-            ["launchctl", "stop", self.LAUNCHD_LABEL],
-            capture_output=True
-        )
+        subprocess.run(["launchctl", "stop", self.LAUNCHD_LABEL], capture_output=True)
 
         # Unload the plist
         if plist_path.exists():
-            subprocess.run(
-                ["launchctl", "unload", str(plist_path)],
-                capture_output=True
-            )
+            subprocess.run(["launchctl", "unload", str(plist_path)], capture_output=True)
 
         logger.info(f"Daemon stopped: {self.LAUNCHD_LABEL}")
 
     def _is_launchd_running(self) -> bool:
         """Check if launchd agent is running."""
         result = subprocess.run(
-            ["launchctl", "list", self.LAUNCHD_LABEL],
-            capture_output=True,
-            text=True
+            ["launchctl", "list", self.LAUNCHD_LABEL], capture_output=True, text=True
         )
         return result.returncode == 0
 
     def _get_launchd_pid(self) -> int | None:
         """Get PID from launchd."""
         result = subprocess.run(
-            ["launchctl", "list", self.LAUNCHD_LABEL],
-            capture_output=True,
-            text=True
+            ["launchctl", "list", self.LAUNCHD_LABEL], capture_output=True, text=True
         )
 
         if result.returncode != 0:

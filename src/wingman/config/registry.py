@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class ContactRole(Enum):
     """Role categories for contacts."""
+
     GIRLFRIEND = "girlfriend"
     SISTER = "sister"
     FRIEND = "friend"
@@ -25,16 +26,18 @@ class ContactRole(Enum):
 
 class ContactTone(Enum):
     """Tone styles for responses."""
+
     AFFECTIONATE = "affectionate"  # Warm, pet names, supportive
-    LOVING = "loving"              # Deep affection, intimate
-    FRIENDLY = "friendly"          # Sibling vibes, playful teasing
-    CASUAL = "casual"              # Relaxed friend energy
-    SARCASTIC = "sarcastic"        # Witty, playful sarcasm
-    NEUTRAL = "neutral"            # Polite acquaintance
+    LOVING = "loving"  # Deep affection, intimate
+    FRIENDLY = "friendly"  # Sibling vibes, playful teasing
+    CASUAL = "casual"  # Relaxed friend energy
+    SARCASTIC = "sarcastic"  # Witty, playful sarcasm
+    NEUTRAL = "neutral"  # Polite acquaintance
 
 
 class GroupCategory(Enum):
     """Categories for group chats."""
+
     FAMILY = "family"
     FRIENDS = "friends"
     WORK = "work"
@@ -43,14 +46,16 @@ class GroupCategory(Enum):
 
 class ReplyPolicy(Enum):
     """Reply policies for chats."""
-    ALWAYS = "always"        # Always respond
+
+    ALWAYS = "always"  # Always respond
     SELECTIVE = "selective"  # Only when mentioned
-    NEVER = "never"          # Never respond
+    NEVER = "never"  # Never respond
 
 
 @dataclass
 class ContactProfile:
     """Profile for a known contact."""
+
     jid: str
     name: str
     role: ContactRole
@@ -76,6 +81,7 @@ class ContactProfile:
 @dataclass
 class GroupConfig:
     """Configuration for a group chat."""
+
     jid: str
     name: str
     category: GroupCategory
@@ -95,6 +101,7 @@ class GroupConfig:
 @dataclass
 class ContactDefaults:
     """Default values for unknown contacts."""
+
     role: ContactRole = ContactRole.UNKNOWN
     tone: ContactTone = ContactTone.NEUTRAL
     allow_proactive: bool = False
@@ -104,6 +111,7 @@ class ContactDefaults:
 @dataclass
 class GroupDefaults:
     """Default values for unknown groups."""
+
     category: GroupCategory = GroupCategory.UNKNOWN
     reply_policy: ReplyPolicy = ReplyPolicy.SELECTIVE
 

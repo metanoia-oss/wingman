@@ -69,11 +69,11 @@ class IMessageTransport(BaseTransport):
             is_group=msg.is_group,
             is_self=msg.is_from_me,
             raw_data={
-                'rowid': msg.rowid,
-                'handle_id': msg.handle_id,
-                'chat_id': msg.chat_id,
-                'chat_name': msg.chat_name,
-                'is_group': msg.is_group,
+                "rowid": msg.rowid,
+                "handle_id": msg.handle_id,
+                "chat_id": msg.chat_id,
+                "chat_name": msg.chat_name,
+                "is_group": msg.is_group,
             },
         )
 

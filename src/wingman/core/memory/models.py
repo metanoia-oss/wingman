@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Message:
     """Represents a stored message."""
+
     id: int | None
     chat_id: str
     sender_id: str
@@ -34,7 +35,8 @@ class MessageStore:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
         with self._get_connection() as conn:
-            conn.execute("""
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS messages (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     chat_id TEXT NOT NULL,
@@ -45,11 +47,14 @@ class MessageStore:
                     is_self BOOLEAN DEFAULT 0,
                     platform TEXT DEFAULT 'whatsapp'
                 )
-            """)
-            conn.execute("""
+            """
+            )
+            conn.execute(
+                """
                 CREATE INDEX IF NOT EXISTS idx_messages_chat
                 ON messages(chat_id, timestamp DESC)
-            """)
+            """
+            )
             # Add platform column if it doesn't exist (migration for existing DBs)
             try:
                 conn.execute("SELECT platform FROM messages LIMIT 1")
@@ -89,19 +94,17 @@ class MessageStore:
                     message.text,
                     message.timestamp,
                     1 if message.is_self else 0,
-                    message.platform
-                )
+                    message.platform,
+                ),
             )
             conn.commit()
             msg_id = cursor.lastrowid
-            logger.debug(f"Stored message {msg_id} in chat {message.chat_id} (platform={message.platform})")
+            logger.debug(
+                f"Stored message {msg_id} in chat {message.chat_id} (platform={message.platform})"
+            )
             return msg_id
 
-    def get_recent_messages(
-        self,
-        chat_id: str,
-        limit: int = 30
-    ) -> list[Message]:
+    def get_recent_messages(self, chat_id: str, limit: int = 30) -> list[Message]:
         """
         Get recent messages from a chat.
 
@@ -121,21 +124,21 @@ class MessageStore:
                 ORDER BY timestamp DESC
                 LIMIT ?
                 """,
-                (chat_id, limit)
+                (chat_id, limit),
             )
             rows = cursor.fetchall()
 
         # Convert to Message objects and reverse for chronological order
         messages = [
             Message(
-                id=row['id'],
-                chat_id=row['chat_id'],
-                sender_id=row['sender_id'],
-                sender_name=row['sender_name'],
-                text=row['text'],
-                timestamp=row['timestamp'],
-                is_self=bool(row['is_self']),
-                platform=row['platform'] or 'whatsapp'
+                id=row["id"],
+                chat_id=row["chat_id"],
+                sender_id=row["sender_id"],
+                sender_name=row["sender_name"],
+                text=row["text"],
+                timestamp=row["timestamp"],
+                is_self=bool(row["is_self"]),
+                platform=row["platform"] or "whatsapp",
             )
             for row in reversed(rows)
         ]
@@ -159,12 +162,12 @@ class MessageStore:
                 ORDER BY timestamp DESC
                 LIMIT 1
                 """,
-                (chat_id,)
+                (chat_id,),
             )
             row = cursor.fetchone()
 
         if row:
-            return "self" if row['is_self'] else row['sender_id']
+            return "self" if row["is_self"] else row["sender_id"]
         return None
 
     def was_last_message_from_self(self, chat_id: str) -> bool:
@@ -178,20 +181,17 @@ class MessageStore:
                 ORDER BY timestamp DESC
                 LIMIT 1
                 """,
-                (chat_id,)
+                (chat_id,),
             )
             row = cursor.fetchone()
 
-        return bool(row and row['is_self'])
+        return bool(row and row["is_self"])
 
     def get_message_count(self, chat_id: str | None = None) -> int:
         """Get total message count, optionally filtered by chat."""
         with self._get_connection() as conn:
             if chat_id:
-                cursor = conn.execute(
-                    "SELECT COUNT(*) FROM messages WHERE chat_id = ?",
-                    (chat_id,)
-                )
+                cursor = conn.execute("SELECT COUNT(*) FROM messages WHERE chat_id = ?", (chat_id,))
             else:
                 cursor = conn.execute("SELECT COUNT(*) FROM messages")
             return cursor.fetchone()[0]
@@ -204,13 +204,11 @@ class MessageStore:
             Number of deleted messages
         """
         import time
+
         cutoff = time.time() - (days * 24 * 60 * 60)
 
         with self._get_connection() as conn:
-            cursor = conn.execute(
-                "DELETE FROM messages WHERE timestamp < ?",
-                (cutoff,)
-            )
+            cursor = conn.execute("DELETE FROM messages WHERE timestamp < ?", (cutoff,))
             conn.commit()
             deleted = cursor.rowcount
 

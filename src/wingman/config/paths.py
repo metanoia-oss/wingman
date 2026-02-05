@@ -125,9 +125,9 @@ class WingmanPaths:
     def is_initialized(self) -> bool:
         """Check if Wingman has been set up (config and node_listener exist)."""
         return (
-            self.config_file.exists() and
-            self.node_dir.exists() and
-            (self.node_dir / "dist" / "index.js").exists()
+            self.config_file.exists()
+            and self.node_dir.exists()
+            and (self.node_dir / "dist" / "index.js").exists()
         )
 
     @classmethod

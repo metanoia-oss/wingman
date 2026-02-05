@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class MessageContext:
     """Context information for a message being evaluated."""
+
     # Message details
     chat_id: str
     sender_id: str
@@ -52,6 +53,7 @@ class MessageContext:
 @dataclass
 class PolicyDecision:
     """Result of policy evaluation."""
+
     should_respond: bool
     reason: str
     rule_name: str | None = None
@@ -61,6 +63,7 @@ class PolicyDecision:
 @dataclass
 class PolicyRule:
     """A single policy rule."""
+
     name: str
     conditions: dict
     action: ReplyPolicy
@@ -108,9 +111,7 @@ class PolicyEvaluator:
             # Load fallback
             fallback_data = config.get("fallback", {})
             if fallback_data:
-                self._fallback_action = ReplyPolicy(
-                    fallback_data.get("action", "selective")
-                )
+                self._fallback_action = ReplyPolicy(fallback_data.get("action", "selective"))
 
             logger.info(f"Loaded {len(self._rules)} policy rules from {config_path}")
 
@@ -227,10 +228,7 @@ class PolicyEvaluator:
         )
 
     def _should_respond_for_action(
-        self,
-        action: ReplyPolicy,
-        is_mentioned: bool,
-        is_reply_to_bot: bool
+        self, action: ReplyPolicy, is_mentioned: bool, is_reply_to_bot: bool
     ) -> bool:
         """Determine if should respond based on action type."""
         if action == ReplyPolicy.ALWAYS:

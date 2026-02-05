@@ -35,6 +35,7 @@ class NodeProcessManager:
         env = None
         if self.auth_state_dir:
             import os
+
             env = os.environ.copy()
             env["AUTH_STATE_DIR"] = str(self.auth_state_dir)
 
@@ -45,17 +46,14 @@ class NodeProcessManager:
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             cwd=str(self.node_dir),
-            env=env
+            env=env,
         )
 
         if not self.process.stdin or not self.process.stdout:
             raise RuntimeError("Failed to create subprocess pipes")
 
         # Create IPC handler
-        self.ipc = IPCHandler(
-            stdin=self.process.stdin,
-            stdout=self.process.stdout
-        )
+        self.ipc = IPCHandler(stdin=self.process.stdin, stdout=self.process.stdout)
 
         # Start stderr reader for logging
         self._stderr_task = asyncio.create_task(self._read_stderr())
@@ -75,10 +73,10 @@ class NodeProcessManager:
                     break
 
                 # Node logs JSON to stderr
-                log_line = line.decode('utf-8').strip()
+                log_line = line.decode("utf-8").strip()
                 if log_line:
                     # Check if it's a QR code line (contains block characters)
-                    if any(c in log_line for c in ['▄', '█', '▀', '=']):
+                    if any(c in log_line for c in ["▄", "█", "▀", "="]):
                         # Print QR directly to stderr for user to see
                         print(log_line, flush=True)
                     else:
@@ -109,8 +107,7 @@ class NodeProcessManager:
         if self.ipc:
             try:
                 await asyncio.wait_for(
-                    self.ipc.send_command(IPCCommand(action="shutdown")),
-                    timeout=2.0
+                    self.ipc.send_command(IPCCommand(action="shutdown")), timeout=2.0
                 )
             except Exception as e:
                 logger.warning(f"Failed to send shutdown command: {e}")

@@ -27,16 +27,18 @@ def auth() -> None:
         console.print("Run [bold]wingman init[/bold] first.")
         raise typer.Exit(1)
 
-    console.print(Panel.fit(
-        "[bold blue]WhatsApp Authentication[/bold blue]\n\n"
-        "A QR code will appear below.\n"
-        "Scan it with WhatsApp on your phone:\n\n"
-        "  1. Open WhatsApp\n"
-        "  2. Go to Settings > Linked Devices\n"
-        "  3. Tap 'Link a Device'\n"
-        "  4. Scan the QR code",
-        border_style="blue",
-    ))
+    console.print(
+        Panel.fit(
+            "[bold blue]WhatsApp Authentication[/bold blue]\n\n"
+            "A QR code will appear below.\n"
+            "Scan it with WhatsApp on your phone:\n\n"
+            "  1. Open WhatsApp\n"
+            "  2. Go to Settings > Linked Devices\n"
+            "  3. Tap 'Link a Device'\n"
+            "  4. Scan the QR code",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # Load settings
@@ -57,10 +59,7 @@ async def _run_auth(settings: Settings) -> None:
 
     connected = asyncio.Event()
 
-    transport = WhatsAppTransport(
-        settings.node_dir,
-        auth_state_dir=settings.auth_state_dir
-    )
+    transport = WhatsAppTransport(settings.node_dir, auth_state_dir=settings.auth_state_dir)
 
     async def on_connected(user_id: str) -> None:
         console.print()

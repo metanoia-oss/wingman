@@ -17,6 +17,7 @@ APPLE_EPOCH_OFFSET = 978307200
 @dataclass
 class IMessageData:
     """Raw iMessage data from chat.db."""
+
     rowid: int
     text: str
     handle_id: str  # Phone number or email
@@ -48,10 +49,7 @@ class IMessageDBListener:
         self._running = False
         self._message_callback: Callable[[IMessageData], Coroutine] | None = None
 
-    def set_message_callback(
-        self,
-        callback: Callable[[IMessageData], Coroutine]
-    ) -> None:
+    def set_message_callback(self, callback: Callable[[IMessageData], Coroutine]) -> None:
         """Set the callback for new messages."""
         self._message_callback = callback
 
@@ -97,11 +95,7 @@ class IMessageDBListener:
     def _get_connection(self) -> sqlite3.Connection:
         """Get a read-only connection to chat.db."""
         # Use URI for read-only access
-        conn = sqlite3.connect(
-            f"file:{self._db_path}?mode=ro",
-            uri=True,
-            timeout=5.0
-        )
+        conn = sqlite3.connect(f"file:{self._db_path}?mode=ro", uri=True, timeout=5.0)
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -153,7 +147,7 @@ class IMessageDBListener:
                         continue  # Skip messages without text
 
                     # Convert Apple timestamp to Unix
-                    apple_date = row['date']
+                    apple_date = row["date"]
                     if apple_date:
                         # Apple stores nanoseconds since 2001-01-01
                         unix_timestamp = (apple_date / 1e9) + APPLE_EPOCH_OFFSET
@@ -161,16 +155,16 @@ class IMessageDBListener:
                         unix_timestamp = time.time()
 
                     # Determine if group chat (style > 0 means group)
-                    is_group = (row['chat_style'] or 0) > 43
+                    is_group = (row["chat_style"] or 0) > 43
 
                     msg = IMessageData(
-                        rowid=row['ROWID'],
+                        rowid=row["ROWID"],
                         text=text,
-                        handle_id=row['handle_identifier'] or '',
-                        chat_id=row['chat_identifier'] or '',
-                        chat_name=row['chat_name'],
+                        handle_id=row["handle_identifier"] or "",
+                        chat_id=row["chat_identifier"] or "",
+                        chat_name=row["chat_name"],
                         timestamp=unix_timestamp,
-                        is_from_me=bool(row['is_from_me']),
+                        is_from_me=bool(row["is_from_me"]),
                         is_group=is_group,
                     )
                     messages.append(msg)
@@ -189,12 +183,12 @@ class IMessageDBListener:
         - attributedBody blob (Ventura+)
         """
         # Try plain text first
-        text = row['text']
+        text = row["text"]
         if text:
             return text.strip()
 
         # Try attributedBody (Ventura+ stores text as NSAttributedString blob)
-        attributed_body = row['attributedBody']
+        attributed_body = row["attributedBody"]
         if attributed_body:
             try:
                 return self._parse_attributed_body(attributed_body)
@@ -213,13 +207,13 @@ class IMessageDBListener:
         try:
             # Look for the text content within the blob
             # The structure varies but text is typically after 'NSString' marker
-            decoded = blob.decode('utf-8', errors='ignore')
+            decoded = blob.decode("utf-8", errors="ignore")
 
             # Find the actual message text
             # Look for pattern: text follows certain markers
             markers = [
-                'NSString',
-                'NSMutableString',
+                "NSString",
+                "NSMutableString",
             ]
 
             for marker in markers:
@@ -227,21 +221,21 @@ class IMessageDBListener:
                     # Text typically follows the marker with some length info
                     idx = decoded.find(marker)
                     # Skip past marker and find readable text
-                    remaining = decoded[idx + len(marker):]
+                    remaining = decoded[idx + len(marker) :]
                     # Extract printable characters
-                    text = ''.join(c for c in remaining if c.isprintable() or c.isspace())
+                    text = "".join(c for c in remaining if c.isprintable() or c.isspace())
                     text = text.strip()
                     if text and len(text) > 1:
                         # Clean up any trailing garbage
                         # Text usually ends at first control sequence
-                        for end_marker in ['\x00', '\x01', '\x02']:
+                        for end_marker in ["\x00", "\x01", "\x02"]:
                             if end_marker in text:
                                 text = text.split(end_marker)[0]
                         return text.strip() if text.strip() else None
 
             # Alternative: try to find text between known delimiters
             # streamtyped data format
-            if b'streamtyped' in blob:
+            if b"streamtyped" in blob:
                 # Find text after the plist-like structure
                 try:
                     # Look for readable text sequences
@@ -252,19 +246,26 @@ class IMessageDBListener:
                             current.append(chr(byte))
                         else:
                             if len(current) > 3:  # Minimum word length
-                                text_parts.append(''.join(current))
+                                text_parts.append("".join(current))
                             current = []
                     if current and len(current) > 3:
-                        text_parts.append(''.join(current))
+                        text_parts.append("".join(current))
 
                     # Filter out known non-text strings
                     filtered = [
-                        p for p in text_parts
-                        if p not in ['streamtyped', 'NSMutableAttributedString',
-                                    'NSAttributedString', 'NSString', 'NSDictionary']
+                        p
+                        for p in text_parts
+                        if p
+                        not in [
+                            "streamtyped",
+                            "NSMutableAttributedString",
+                            "NSAttributedString",
+                            "NSString",
+                            "NSDictionary",
+                        ]
                     ]
                     if filtered:
-                        return ' '.join(filtered)
+                        return " ".join(filtered)
                 except Exception:
                     pass
 

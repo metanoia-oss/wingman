@@ -42,8 +42,7 @@ class RateLimiter:
         self._cleanup_old_entries()
         self._timestamps.append(time.time())
         logger.debug(
-            f"Reply recorded: {len(self._timestamps)}/{self.max_replies} "
-            f"in current window"
+            f"Reply recorded: {len(self._timestamps)}/{self.max_replies} " f"in current window"
         )
 
     def get_remaining(self) -> int:

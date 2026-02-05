@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Platform(Enum):
     """Supported messaging platforms."""
+
     WHATSAPP = "whatsapp"
     IMESSAGE = "imessage"
 
@@ -19,6 +20,7 @@ class Platform(Enum):
 @dataclass
 class MessageEvent:
     """Unified message structure across all platforms."""
+
     # Core message data
     chat_id: str
     sender_id: str

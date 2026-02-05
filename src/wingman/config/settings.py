@@ -29,7 +29,7 @@ class Settings:
     max_replies_per_hour: int = 30
     default_cooldown_seconds: int = 60
     quiet_hours_start: int = 0  # Midnight
-    quiet_hours_end: int = 6    # 6 AM
+    quiet_hours_end: int = 6  # 6 AM
     quiet_hours_enabled: bool = True
 
     # LLM settings
@@ -109,28 +109,23 @@ class Settings:
             # OpenAI
             openai_api_key=api_key,
             openai_model=openai_config.get("model", "gpt-4o"),
-
             # Bot identity
             bot_name=bot_config.get("name", "Maximus"),
-
             # Safety limits
             max_replies_per_hour=safety_config.get("max_replies_per_hour", 30),
             default_cooldown_seconds=safety_config.get("cooldown_seconds", 60),
             quiet_hours_start=quiet_hours_config.get("start", 0),
             quiet_hours_end=quiet_hours_config.get("end", 6),
             quiet_hours_enabled=quiet_hours_config.get("enabled", True),
-
             # LLM settings
             context_window_size=openai_config.get("context_window_size", 30),
             max_response_tokens=openai_config.get("max_response_tokens", 150),
             temperature=openai_config.get("temperature", 0.8),
-
             # iMessage settings
             imessage_enabled=imessage_config.get("enabled", False),
             imessage_poll_interval=imessage_config.get("poll_interval", 2.0),
             imessage_max_replies_per_hour=imessage_config.get("max_replies_per_hour", 15),
             imessage_cooldown=imessage_config.get("cooldown", 120),
-
             # Paths from WingmanPaths
             node_dir=paths.node_dir,
             data_dir=paths.data_dir,
@@ -140,7 +135,6 @@ class Settings:
             contacts_config=paths.contacts_config,
             groups_config=paths.groups_config,
             policies_config=paths.policies_config,
-
             _is_cli_mode=True,
         )
 
@@ -163,27 +157,22 @@ class Settings:
             # OpenAI
             openai_api_key=os.getenv("OPENAI_API_KEY", ""),
             openai_model=os.getenv("OPENAI_MODEL", "gpt-4o"),
-
             # Bot identity
             bot_name=os.getenv("BOT_NAME", "Maximus"),
-
             # Safety limits
             max_replies_per_hour=int(os.getenv("MAX_REPLIES_PER_HOUR", "30")),
             default_cooldown_seconds=int(os.getenv("DEFAULT_COOLDOWN_SECONDS", "60")),
             quiet_hours_start=int(os.getenv("QUIET_HOURS_START", "0")),
             quiet_hours_end=int(os.getenv("QUIET_HOURS_END", "6")),
-
             # LLM settings
             context_window_size=int(os.getenv("CONTEXT_WINDOW_SIZE", "30")),
             max_response_tokens=int(os.getenv("MAX_RESPONSE_TOKENS", "150")),
             temperature=float(os.getenv("TEMPERATURE", "0.8")),
-
             # iMessage settings
             imessage_enabled=os.getenv("IMESSAGE_ENABLED", "false").lower() == "true",
             imessage_poll_interval=float(os.getenv("IMESSAGE_POLL_INTERVAL", "2.0")),
             imessage_max_replies_per_hour=int(os.getenv("IMESSAGE_MAX_REPLIES_PER_HOUR", "15")),
             imessage_cooldown=int(os.getenv("IMESSAGE_COOLDOWN", "120")),
-
             # Paths (legacy project structure)
             node_dir=project_root / "node_listener",
             data_dir=project_root / "data",
@@ -193,7 +182,6 @@ class Settings:
             contacts_config=project_root / "config" / "contacts.yaml",
             groups_config=project_root / "config" / "groups.yaml",
             policies_config=project_root / "config" / "policies.yaml",
-
             _is_cli_mode=False,
         )
 
@@ -209,7 +197,9 @@ class Settings:
         return settings
 
     @classmethod
-    def _load_from_env_with_paths(cls, paths: WingmanPaths, env_path: Path | None = None) -> "Settings":
+    def _load_from_env_with_paths(
+        cls, paths: WingmanPaths, env_path: Path | None = None
+    ) -> "Settings":
         """Load settings from environment variables with XDG paths."""
         if env_path:
             load_dotenv(env_path)
@@ -218,27 +208,22 @@ class Settings:
             # OpenAI
             openai_api_key=os.getenv("OPENAI_API_KEY", ""),
             openai_model=os.getenv("OPENAI_MODEL", "gpt-4o"),
-
             # Bot identity
             bot_name=os.getenv("BOT_NAME", "Maximus"),
-
             # Safety limits
             max_replies_per_hour=int(os.getenv("MAX_REPLIES_PER_HOUR", "30")),
             default_cooldown_seconds=int(os.getenv("DEFAULT_COOLDOWN_SECONDS", "60")),
             quiet_hours_start=int(os.getenv("QUIET_HOURS_START", "0")),
             quiet_hours_end=int(os.getenv("QUIET_HOURS_END", "6")),
-
             # LLM settings
             context_window_size=int(os.getenv("CONTEXT_WINDOW_SIZE", "30")),
             max_response_tokens=int(os.getenv("MAX_RESPONSE_TOKENS", "150")),
             temperature=float(os.getenv("TEMPERATURE", "0.8")),
-
             # iMessage settings
             imessage_enabled=os.getenv("IMESSAGE_ENABLED", "false").lower() == "true",
             imessage_poll_interval=float(os.getenv("IMESSAGE_POLL_INTERVAL", "2.0")),
             imessage_max_replies_per_hour=int(os.getenv("IMESSAGE_MAX_REPLIES_PER_HOUR", "15")),
             imessage_cooldown=int(os.getenv("IMESSAGE_COOLDOWN", "120")),
-
             # Paths from WingmanPaths
             node_dir=paths.node_dir,
             data_dir=paths.data_dir,
@@ -248,7 +233,6 @@ class Settings:
             contacts_config=paths.contacts_config,
             groups_config=paths.groups_config,
             policies_config=paths.policies_config,
-
             _is_cli_mode=True,
         )
 
