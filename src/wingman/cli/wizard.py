@@ -130,8 +130,12 @@ class SetupWizard:
             from openai import OpenAI
 
             client = OpenAI(api_key=api_key)
-            # Simple test - list models
-            client.models.list()
+            # Use a minimal chat completion to verify the key works
+            client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": "hi"}],
+                max_tokens=1,
+            )
             return True
         except Exception:
             return False
