@@ -19,12 +19,22 @@ class ContactsCommand(BaseCommand):
     name = "contacts"
     description = "Manage contacts"
     category = "Contact Management"
+    usage = "/contacts <list|add|edit|remove|show> [args]"
+    examples = [
+        "/contacts list",
+        "/contacts list --role friend",
+        "/contacts add +1234567890@s.whatsapp.net --name John --role friend --tone casual",
+        "/contacts add",
+        "/contacts edit John --tone sarcastic",
+        "/contacts remove John",
+        "/contacts show John",
+    ]
     subcommands = {
-        "list": "List all contacts (--role to filter)",
-        "add": "Add a contact (interactive if no args)",
-        "edit": "Edit a contact (--role, --tone, --name)",
-        "remove": "Remove a contact",
-        "show": "Show a contact's details",
+        "list": "List contacts. Flags: --role <friend|family|work|unknown>",
+        "add": "Add contact. Flags: --name, --role, --tone. Or run without args for interactive mode",
+        "edit": "Edit contact. Args: <name|jid>. Flags: --name, --role, --tone",
+        "remove": "Remove contact. Args: <name|jid>",
+        "show": "Show contact details. Args: <name|jid>",
     }
 
     def execute(self, cmd: ParsedCommand) -> None:
@@ -38,6 +48,9 @@ class ContactsCommand(BaseCommand):
             self._remove(cmd)
         elif cmd.subcommand == "show":
             self._show(cmd)
+        elif cmd.subcommand and cmd.subcommand not in self.subcommands:
+            valid = ", ".join(self.subcommands.keys())
+            print_error(f"Unknown subcommand: {cmd.subcommand}. Try: {valid}")
         else:
             self._list(cmd)
 

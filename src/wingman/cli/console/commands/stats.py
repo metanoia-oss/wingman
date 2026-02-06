@@ -19,6 +19,8 @@ class StatsCommand(BaseCommand):
     name = "stats"
     description = "Overall bot statistics"
     category = "Stats"
+    usage = "/stats"
+    examples = ["/stats"]
 
     def execute(self, cmd: ParsedCommand) -> None:
         db_path = self.app.paths.db_path
@@ -52,6 +54,11 @@ class ActivityCommand(BaseCommand):
     name = "activity"
     description = "Recent bot activity"
     category = "Stats"
+    usage = "/activity [-n count]"
+    examples = [
+        "/activity",
+        "/activity -n 50",
+    ]
 
     def execute(self, cmd: ParsedCommand) -> None:
         limit = 20

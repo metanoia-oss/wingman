@@ -19,6 +19,11 @@ class ChatsCommand(BaseCommand):
     name = "chats"
     description = "List recent chats"
     category = "Messaging"
+    usage = "/chats [-n count]"
+    examples = [
+        "/chats",
+        "/chats -n 50",
+    ]
 
     def execute(self, cmd: ParsedCommand) -> None:
         limit = 20
@@ -64,6 +69,12 @@ class HistoryCommand(BaseCommand):
     name = "history"
     description = "View chat history"
     category = "Messaging"
+    usage = "/history <name|jid> [-n count]"
+    examples = [
+        "/history John",
+        "/history John -n 50",
+        "/history +1234567890@s.whatsapp.net",
+    ]
 
     def execute(self, cmd: ParsedCommand) -> None:
         if not cmd.subcommand:

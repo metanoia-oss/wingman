@@ -38,6 +38,12 @@ class BotCommand(BaseCommand):
     name = "start"
     description = "Start the bot"
     category = "Bot Control"
+    usage = "/start [--foreground|-f]"
+    examples = [
+        "/start",
+        "/start --foreground",
+        "/start -f",
+    ]
     subcommands = {}
 
     def execute(self, cmd: ParsedCommand) -> None:
@@ -93,6 +99,8 @@ class StopCommand(BaseCommand):
     name = "stop"
     description = "Stop the bot"
     category = "Bot Control"
+    usage = "/stop"
+    examples = ["/stop"]
 
     def execute(self, cmd: ParsedCommand) -> None:
         from wingman.daemon import DaemonManager
@@ -117,6 +125,8 @@ class RestartCommand(BaseCommand):
     name = "restart"
     description = "Restart the bot"
     category = "Bot Control"
+    usage = "/restart"
+    examples = ["/restart"]
 
     def execute(self, cmd: ParsedCommand) -> None:
         from wingman.daemon import DaemonManager
@@ -138,6 +148,8 @@ class StatusCommand(BaseCommand):
     name = "status"
     description = "Show bot status, uptime, transports"
     category = "Bot Control"
+    usage = "/status"
+    examples = ["/status"]
 
     def execute(self, cmd: ParsedCommand) -> None:
         from wingman.daemon import DaemonManager
@@ -194,6 +206,13 @@ class PauseCommand(BaseCommand):
     name = "pause"
     description = "Temporarily pause bot responses"
     category = "Bot Control"
+    usage = "/pause [duration]"
+    examples = [
+        "/pause",
+        "/pause 30m",
+        "/pause 2h",
+        "/pause 1d",
+    ]
 
     def execute(self, cmd: ParsedCommand) -> None:
         duration = None
@@ -224,6 +243,8 @@ class ResumeCommand(BaseCommand):
     name = "resume"
     description = "Resume bot after pause"
     category = "Bot Control"
+    usage = "/resume"
+    examples = ["/resume"]
 
     def execute(self, cmd: ParsedCommand) -> None:
         try:

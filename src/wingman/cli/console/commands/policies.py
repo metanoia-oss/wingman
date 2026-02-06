@@ -24,13 +24,23 @@ class PoliciesCommand(BaseCommand):
     name = "policies"
     description = "Manage response policies"
     category = "Policy Management"
+    usage = "/policies <list|add|remove|move|test|fallback> [args]"
+    examples = [
+        "/policies list",
+        "/policies add dm_only --condition is_dm=true --action always",
+        "/policies add family_reply --condition role=family --action always",
+        "/policies remove dm_only",
+        "/policies move family_reply 0",
+        "/policies test +1234@s.whatsapp.net --text 'hello'",
+        "/policies fallback selective",
+    ]
     subcommands = {
-        "list": "List rules in evaluation order",
-        "add": "Add a rule (--condition k=v --action X)",
-        "remove": "Remove a rule by name",
-        "move": "Reorder a rule (e.g., /policies move rule_name 0)",
-        "test": "Simulate policy evaluation for a JID",
-        "fallback": "View or set fallback action",
+        "list": "List all rules in evaluation order",
+        "add": "Add rule. Args: <name>. Flags: --condition k=v, --action <always|never|selective>",
+        "remove": "Remove rule. Args: <name>",
+        "move": "Reorder rule. Args: <name> <position>",
+        "test": "Test policy. Args: <jid>. Flags: --text 'message'",
+        "fallback": "View/set fallback. Args: [always|never|selective]",
     }
 
     def execute(self, cmd: ParsedCommand) -> None:
@@ -46,6 +56,9 @@ class PoliciesCommand(BaseCommand):
             self._test(cmd)
         elif cmd.subcommand == "fallback":
             self._fallback(cmd)
+        elif cmd.subcommand and cmd.subcommand not in self.subcommands:
+            valid = ", ".join(self.subcommands.keys())
+            print_error(f"Unknown subcommand: {cmd.subcommand}. Try: {valid}")
         else:
             self._list()
 

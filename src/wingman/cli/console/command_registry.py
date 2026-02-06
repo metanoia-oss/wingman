@@ -23,6 +23,8 @@ class CommandInfo:
     description: str
     subcommands: dict[str, str] = field(default_factory=dict)  # subcommand -> description
     category: str = "General"
+    usage: str = ""
+    examples: list[str] = field(default_factory=list)
 
 
 class BaseCommand(ABC):
@@ -33,6 +35,8 @@ class BaseCommand(ABC):
     description: str = ""
     category: str = "General"
     subcommands: dict[str, str] = {}  # subcommand -> description
+    usage: str = ""  # syntax hint
+    examples: list[str] = []  # example commands
 
     def __init__(self, app: ConsoleApp):
         self.app = app
@@ -48,6 +52,8 @@ class BaseCommand(ABC):
             description=self.description,
             subcommands=dict(self.subcommands),
             category=self.category,
+            usage=self.usage,
+            examples=list(self.examples),
         )
 
 

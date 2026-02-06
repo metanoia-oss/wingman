@@ -19,9 +19,18 @@ class ConfigCommand(BaseCommand):
     name = "config"
     description = "View or modify configuration"
     category = "Configuration"
+    usage = "/config <show|set|edit|reload> [args]"
+    examples = [
+        "/config show",
+        "/config show openai",
+        "/config set openai.model gpt-4-turbo",
+        "/config set safety.rate_limit 20",
+        "/config edit",
+        "/config reload",
+    ]
     subcommands = {
-        "show": "Show config (optionally filter: openai, safety, bot, imessage)",
-        "set": "Set a value (e.g., /config set openai.model gpt-4-turbo)",
+        "show": "Show config. Args: [section] (openai|safety|bot|imessage)",
+        "set": "Set a value. Args: <key> <value>. Example: openai.model gpt-4-turbo",
         "edit": "Open config in $EDITOR",
         "reload": "Force reload all configs",
     }
@@ -35,6 +44,9 @@ class ConfigCommand(BaseCommand):
             self._edit()
         elif cmd.subcommand == "reload":
             self._reload()
+        elif cmd.subcommand and cmd.subcommand not in self.subcommands:
+            valid = ", ".join(self.subcommands.keys())
+            print_error(f"Unknown subcommand: {cmd.subcommand}. Try: {valid}")
         else:
             self._show(cmd)
 

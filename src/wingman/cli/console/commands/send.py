@@ -16,6 +16,11 @@ class SendCommand(BaseCommand):
     name = "send"
     description = "Send a message via the bot"
     category = "Messaging"
+    usage = "/send <name|jid> <message>"
+    examples = [
+        "/send John Hello, how are you?",
+        "/send +1234567890@s.whatsapp.net Hey there!",
+    ]
 
     def execute(self, cmd: ParsedCommand) -> None:
         if not cmd.subcommand:

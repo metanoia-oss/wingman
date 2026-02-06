@@ -18,11 +18,19 @@ class GroupsCommand(BaseCommand):
     name = "groups"
     description = "Manage groups"
     category = "Group Management"
+    usage = "/groups <list|add|edit|remove> [args]"
+    examples = [
+        "/groups list",
+        "/groups add 123456@g.us --name Family --category family --policy always",
+        "/groups add",
+        "/groups edit Family --policy never",
+        "/groups remove Family",
+    ]
     subcommands = {
         "list": "List all groups",
-        "add": "Add a group (interactive if no args)",
-        "edit": "Edit a group (--category, --policy, --name)",
-        "remove": "Remove a group",
+        "add": "Add group. Flags: --name, --category <family|friends|work|community>, --policy <always|never|selective>",
+        "edit": "Edit group. Args: <name|jid>. Flags: --name, --category, --policy",
+        "remove": "Remove group. Args: <name|jid>",
     }
 
     def execute(self, cmd: ParsedCommand) -> None:
@@ -34,6 +42,9 @@ class GroupsCommand(BaseCommand):
             self._edit(cmd)
         elif cmd.subcommand == "remove":
             self._remove(cmd)
+        elif cmd.subcommand and cmd.subcommand not in self.subcommands:
+            valid = ", ".join(self.subcommands.keys())
+            print_error(f"Unknown subcommand: {cmd.subcommand}. Try: {valid}")
         else:
             self._list()
 

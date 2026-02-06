@@ -15,6 +15,14 @@ class LogsCommand(BaseCommand):
     name = "logs"
     description = "View bot activity logs"
     category = "Bot Control"
+    usage = "/logs [-n lines] [--follow|-f] [--error]"
+    examples = [
+        "/logs",
+        "/logs -n 100",
+        "/logs --follow",
+        "/logs -f",
+        "/logs --error",
+    ]
     subcommands = {}
 
     def execute(self, cmd: ParsedCommand) -> None:
