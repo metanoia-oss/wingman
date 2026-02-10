@@ -5,229 +5,297 @@
 [![CI](https://github.com/metanoia-oss/wingman/actions/workflows/ci.yml/badge.svg)](https://github.com/metanoia-oss/wingman/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An AI-powered personal chat agent that participates in conversations with configurable personality, tone adaptation based on contact relationships, and policy-driven response rules. Supports multiple platforms including WhatsApp and iMessage (with more coming). Built with OpenAI GPT models.
+An AI-powered personal chat agent for WhatsApp and iMessage. Wingman replies to messages on your behalf with a configurable personality, adapts tone based on who you're talking to, and follows policy rules you define.
+
+## Quick Start
+
+```bash
+# Install
+pip install wingman-ai
+
+# Run setup wizard
+wingman init
+
+# Connect WhatsApp (scan QR code)
+wingman auth
+
+# Launch interactive console
+wingman console
+```
+
+That's it. The console gives you full control over the bot.
 
 ## Features
 
-- **Personality-driven responses** - Configurable bot personality with witty, casual tone
-- **Role-based tone adaptation** - Different tones for different relationships (partner, family, friends)
-- **Policy-driven rules** - Fine-grained control over when to respond
+- **Personality-driven responses** - Define how your bot talks (witty, formal, casual)
+- **Tone adaptation** - Different tones for different people (loving for partner, casual for friends)
+- **Policy rules** - Control when to respond (always reply to family, never to work groups)
 - **Safety controls** - Rate limiting, cooldowns, quiet hours
 - **Conversation memory** - Context-aware responses using message history
-- **Hot-reload config** - Changes to contacts/groups apply without restart
-- **Background daemon** - Runs as a macOS service with auto-restart
+- **Interactive console** - Manage everything from a REPL with slash commands
+- **Background daemon** - Runs as a service with auto-restart
 
-## Architecture
+## The Console
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      WhatsApp Web                           │
-└─────────────────────────┬───────────────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────────────┐
-│              Node.js Listener (Baileys)                     │
-│              node_listener/                                 │
-│  - Connects to WhatsApp Web                                 │
-│  - Receives messages via WebSocket                          │
-│  - Sends messages back                                      │
-└─────────────────────────┬───────────────────────────────────┘
-                          │ IPC (stdin/stdout)
-┌─────────────────────────▼───────────────────────────────────┐
-│              Python Orchestrator                            │
-│              python_orchestrator/                           │
-│  - Message processing & filtering                           │
-│  - Config-driven identity (contacts.yaml, groups.yaml)      │
-│  - Policy-based response rules (policies.yaml)              │
-│  - Role-based tone adaptation                               │
-│  - OpenAI GPT integration                                   │
-│  - Conversation memory (SQLite)                             │
-│  - Safety controls (rate limits, quiet hours, cooldowns)    │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Prerequisites
-
-- **macOS** (tested on macOS, may work on Linux with modifications)
-- **Python 3.10+**
-- **Node.js 18+**
-- **WhatsApp account** (on your phone)
-- **OpenAI API key**
-
-## Installation
-
-### Quick Install (Recommended)
+The interactive console is the main way to manage Wingman. Launch it with:
 
 ```bash
-pip install wingman-ai
+wingman console
 ```
 
-Then run the interactive setup:
+You'll get a REPL where you can control the bot, manage contacts, configure policies, and more:
 
-```bash
-wingman init
+```
+Wingman Console v1.1.2
+
+> /help
+  Wingman Console v1.1.2
+
+  Help & Navigation
+    /help                Show all commands or help for one
+    /quit                Exit the console
+
+  Bot Control
+    /start               Start the bot
+    /stop                Stop the bot
+    /restart             Restart the bot
+    /status              Show bot status, uptime, transports
+    /pause               Temporarily pause bot responses
+    /resume              Resume bot after pause
+    /logs                View bot activity logs
+
+  Configuration
+    /config              View or modify configuration
+
+  Contact Management
+    /contacts            Manage contacts
+
+  Group Management
+    /groups              Manage groups
+
+  Policy Management
+    /policies            Manage response policies
+
+  Messaging
+    /send                Send a message via the bot
+    /chats               List recent chats
+    /history             View chat history
+
+  Stats
+    /stats               Overall bot statistics
+    /activity            Recent bot activity
+
+  Type /help <command> for details
 ```
 
-The setup wizard will:
-1. Check prerequisites (Python, Node.js, npm)
-2. Configure your OpenAI API key
-3. Set up bot personality and name
-4. Configure safety settings
-5. Install the WhatsApp listener
-
-### Development Install
+### Getting Help
 
 ```bash
-git clone https://github.com/metanoia-oss/wingman.git
-cd wingman
-pip install -e .
-wingman init
+# Show all commands
+/help
+
+# Show help for a specific command
+/help contacts
+
+# Show help for a subcommand
+/help contacts add
+```
+
+### Managing Contacts
+
+```bash
+# List all contacts
+/contacts list
+
+# Filter by role
+/contacts list --role friend
+
+# Add a contact (interactive mode)
+/contacts add
+
+# Add a contact with flags
+/contacts add +1234567890@s.whatsapp.net --name John --role friend --tone casual
+
+# Edit a contact
+/contacts edit John --tone sarcastic
+
+# Show contact details
+/contacts show John
+
+# Remove a contact
+/contacts remove John
+```
+
+**Roles:** `friend`, `family`, `work`, `unknown`
+
+**Tones:** `loving`, `affectionate`, `friendly`, `casual`, `sarcastic`, `neutral`
+
+### Managing Groups
+
+```bash
+# List all groups
+/groups list
+
+# Add a group (interactive mode)
+/groups add
+
+# Add with flags
+/groups add 123456@g.us --name "Family Chat" --category family --policy always
+
+# Edit a group
+/groups edit "Family Chat" --policy never
+
+# Remove a group
+/groups remove "Family Chat"
+```
+
+**Categories:** `family`, `friends`, `work`, `community`, `unknown`
+
+**Policies:** `always`, `selective`, `never`
+
+### Managing Policies
+
+Policies determine when the bot responds. Rules are evaluated in order; first match wins.
+
+```bash
+# List all rules
+/policies list
+
+# Add a rule
+/policies add family_always --condition role=family --action always
+/policies add work_never --condition is_group=true,group_category=work --action never
+
+# Remove a rule
+/policies remove work_never
+
+# Reorder a rule (move to position 0 = highest priority)
+/policies move family_always 0
+
+# Test how a message would be handled
+/policies test +1234@s.whatsapp.net --text "hello"
+
+# View/set fallback action
+/policies fallback
+/policies fallback selective
+```
+
+**Actions:** `always` (always respond), `selective` (only when mentioned), `never` (ignore)
+
+### Bot Control
+
+```bash
+# Start the bot
+/start
+
+# Start in foreground (see output directly)
+/start --foreground
+
+# Stop the bot
+/stop
+
+# Check status
+/status
+
+# Pause for 30 minutes
+/pause 30m
+
+# Pause for 2 hours
+/pause 2h
+
+# Resume
+/resume
+
+# View logs
+/logs
+/logs -n 100
+/logs --follow
+```
+
+### Sending Messages
+
+```bash
+# Send a message
+/send John Hey, what's up?
+
+# Send using JID
+/send +1234567890@s.whatsapp.net Hello!
+```
+
+### Viewing History
+
+```bash
+# List recent chats
+/chats
+
+# View chat history
+/history John
+/history John -n 50
+```
+
+### Configuration
+
+```bash
+# Show all config
+/config show
+
+# Show a section
+/config show openai
+
+# Set a value
+/config set openai.model gpt-4-turbo
+/config set safety.rate_limit 20
+
+# Open in editor
+/config edit
+
+# Force reload
+/config reload
 ```
 
 ## CLI Commands
+
+For quick operations outside the console:
 
 | Command | Description |
 |---------|-------------|
 | `wingman init` | Interactive setup wizard |
 | `wingman auth` | Connect WhatsApp (scan QR code) |
+| `wingman console` | Launch interactive console |
 | `wingman start` | Start bot as background daemon |
 | `wingman start -f` | Start bot in foreground |
 | `wingman stop` | Stop running bot |
 | `wingman status` | Check if running |
-| `wingman logs` | View/stream activity logs |
-| `wingman config` | View or edit configuration |
+| `wingman logs` | View activity logs |
+| `wingman config` | View configuration |
 | `wingman uninstall` | Remove Wingman and all data |
 
-## Quick Start
+## Configuration Files
 
-```bash
-# 1. Install
-pip install wingman-ai
+After running `wingman init`, config files are stored in:
 
-# 2. Run setup wizard
-wingman init
+```
+~/.config/wingman/
+├── config.yaml           # Main configuration (API keys, model, personality)
+├── contacts.yaml         # Contact profiles (name, role, tone)
+├── groups.yaml           # Group settings (category, reply policy)
+└── policies.yaml         # Response rules
 
-# 3. Connect WhatsApp
-wingman auth
+~/.local/share/wingman/
+├── conversations.db      # Message history (SQLite)
+└── auth_state/           # WhatsApp credentials
 
-# 4. Start the bot
-wingman start
-
-# 5. Check status
-wingman status
-
-# 6. View logs
-wingman logs
+~/.cache/wingman/
+└── logs/                 # Log files
 ```
 
-## Running the Bot
-
-### First Run: WhatsApp Authentication
-
-After setup, connect WhatsApp by scanning a QR code:
-
-```bash
-wingman auth
-```
-
-1. A QR code will appear in the terminal
-2. Open WhatsApp on your phone
-3. Go to **Settings > Linked Devices > Link a Device**
-4. Scan the QR code
-5. Wait for "Connected!" message
-
-### Start as Background Service
-
-```bash
-wingman start
-```
-
-This starts Wingman as a macOS launchd service that auto-restarts on crash.
-
-### Run in Foreground
-
-```bash
-wingman start --foreground
-```
-
-Press `Ctrl+C` to stop.
-
-### View Logs
-
-```bash
-# Stream logs in real-time
-wingman logs
-
-# Show last 100 lines without streaming
-wingman logs --no-follow -n 100
-
-# Show error logs
-wingman logs --error
-```
-
----
-
-## Legacy Installation (Manual)
-
-<details>
-<summary>Click to expand manual installation steps</summary>
-
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/metanoia-oss/wingman.git
-cd wingman
-```
-
-### Step 2: Set Up Python Environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### Step 3: Build Node.js Listener
-
-```bash
-cd node_listener
-npm install
-npm run build
-cd ..
-```
-
-### Step 4: Configure Environment
-
-```bash
-cp .env.example .env
-nano .env  # Add your OPENAI_API_KEY
-```
-
-### Step 5: Configure Contacts & Policies
-
-```bash
-cp config/contacts.yaml.example config/contacts.yaml
-cp config/groups.yaml.example config/groups.yaml
-cp config/policies.yaml.example config/policies.yaml
-```
-
-### Run with Legacy Script
-
-```bash
-python run.py
-```
-
-</details>
-
-## Configuration
-
-### Config File (`~/.config/wingman/config.yaml`)
+### Main Config (`config.yaml`)
 
 ```yaml
 bot:
   name: "Wingman"
 
 openai:
-  api_key: "sk-..."  # Or use OPENAI_API_KEY env var
+  api_key: "sk-..."
   model: "gpt-4o"
   max_response_tokens: 150
   temperature: 0.8
@@ -245,94 +313,44 @@ safety:
     end: 6
 ```
 
-### Environment Variables (Legacy)
-
-These are still supported for backward compatibility:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OPENAI_API_KEY` | (required) | Your OpenAI API key |
-| `OPENAI_MODEL` | `gpt-4o` | Model to use (gpt-4o, gpt-4-turbo, gpt-3.5-turbo) |
-| `BOT_NAME` | `Maximus` | Name the bot responds to |
-| `MAX_REPLIES_PER_HOUR` | `30` | Rate limit for replies |
-| `DEFAULT_COOLDOWN_SECONDS` | `60` | Minimum seconds between replies |
-| `QUIET_HOURS_START` | `0` | Hour to start quiet mode (0-23) |
-| `QUIET_HOURS_END` | `6` | Hour to end quiet mode (0-23) |
-| `CONTEXT_WINDOW_SIZE` | `30` | Number of messages to include as context |
-| `MAX_RESPONSE_TOKENS` | `150` | Maximum response length |
-| `TEMPERATURE` | `0.8` | Creativity (0.0-1.0) |
-
-### Contact Configuration (`config/contacts.yaml`)
-
-Maps WhatsApp JIDs to contact profiles with roles and tone preferences.
+### Contacts (`contacts.yaml`)
 
 ```yaml
 contacts:
   "+14155551234@s.whatsapp.net":
-    name: "Partner"
-    role: girlfriend      # girlfriend, sister, friend, family, colleague, unknown
-    tone: affectionate    # loving, affectionate, friendly, casual, sarcastic, neutral
-    allow_proactive: true
-    cooldown_override: 30 # Custom cooldown (seconds)
+    name: "Alex"
+    role: friend
+    tone: casual
+    cooldown_override: 30
 
 defaults:
   role: unknown
   tone: neutral
-  allow_proactive: false
 ```
 
-**Available Tones:**
-
-| Tone | Behavior |
-|------|----------|
-| `loving` | Deep affection and intimacy (for partners) |
-| `affectionate` | Warm, caring, supportive |
-| `friendly` | Playful teasing, sibling vibes |
-| `casual` | Relaxed friend energy |
-| `sarcastic` | Witty banter, dry humor |
-| `neutral` | Polite, maintains boundaries |
-
-### Group Configuration (`config/groups.yaml`)
-
-Maps group JIDs to categories and reply policies.
+### Groups (`groups.yaml`)
 
 ```yaml
 groups:
   "120363012345678901@g.us":
     name: "Family Chat"
-    category: family    # family, friends, work, unknown
-    reply_policy: always  # always, selective, never
+    category: family
+    reply_policy: always
 
 defaults:
   category: unknown
   reply_policy: selective
 ```
 
-**Reply Policies:**
-
-| Policy | Behavior |
-|--------|----------|
-| `always` | Always respond to messages |
-| `selective` | Only respond when @mentioned or replying to bot |
-| `never` | Never respond in this chat |
-
-### Policy Rules (`config/policies.yaml`)
-
-Rules for determining when to respond. Evaluated in order; first match wins.
+### Policies (`policies.yaml`)
 
 ```yaml
 rules:
-  - name: "girlfriend_dm"
+  - name: "family_dm"
     conditions:
       is_dm: true
-      role: girlfriend
+      role: family
     action: always
-
-  - name: "unknown_dm"
-    conditions:
-      is_dm: true
-      role: unknown
-    action: never
 
   - name: "work_group"
     conditions:
@@ -344,121 +362,64 @@ fallback:
   action: selective
 ```
 
-**Available Conditions:**
-- `is_dm: true/false` - Is this a direct message?
-- `is_group: true/false` - Is this a group chat?
-- `role: girlfriend/sister/friend/...` - Contact's role
-- `group_category: family/friends/work/...` - Group's category
-- `is_reply_to_bot: true/false` - Is this a reply to bot's message?
+## Finding JIDs
 
-### Finding JIDs
-
-To find contact and group JIDs:
+JIDs (Jabber IDs) identify contacts and groups. To find them:
 
 1. Send a message to the contact/group
-2. Check the logs:
-   ```bash
-   ./scripts/daemon.sh logs
-   ```
-3. Look for log entries like:
-   ```
-   Processing message: chat=+14155551234@s.whatsapp.net...
-   Resolved: contact=Unknown (role=unknown, tone=neutral)
-   ```
+2. Check the logs: `wingman logs`
+3. Look for: `chat=+14155551234@s.whatsapp.net`
 
-The `chat=` value is the JID you need.
-
-## Project Structure
-
-```
-wingman/
-├── pyproject.toml            # Package configuration
-├── README.md                 # This file
-├── LICENSE                   # MIT License
-│
-├── src/wingman/              # Main Python package
-│   ├── cli/                  # CLI commands (typer)
-│   │   ├── main.py           # CLI entry point
-│   │   ├── wizard.py         # Setup wizard
-│   │   └── commands/         # Individual commands
-│   ├── config/               # Configuration
-│   │   ├── paths.py          # XDG path management
-│   │   ├── settings.py       # Settings loader
-│   │   ├── registry.py       # Contact/Group registries
-│   │   └── personality.py    # Bot personality prompts
-│   ├── core/                 # Core bot logic
-│   │   ├── agent.py          # Main agent class
-│   │   ├── process_manager.py # Node.js subprocess
-│   │   ├── message_processor.py # Message handling
-│   │   ├── llm/              # OpenAI integration
-│   │   ├── memory/           # SQLite conversation storage
-│   │   ├── safety/           # Rate limits, quiet hours
-│   │   ├── policy/           # Policy evaluation
-│   │   └── transports/       # WhatsApp & iMessage
-│   ├── daemon/               # Background service management
-│   └── installer/            # Node.js listener installer
-│
-├── node_listener/            # WhatsApp Web connection
-│   ├── src/                  # TypeScript source
-│   ├── package.json
-│   └── tsconfig.json
-│
-└── config/                   # Example configs (legacy)
-    ├── contacts.yaml.example
-    ├── groups.yaml.example
-    └── policies.yaml.example
+Or use the console:
+```bash
+/chats          # Lists recent chats with JIDs
+/contacts list  # Shows configured contacts with JIDs
+/groups list    # Shows configured groups with JIDs
 ```
 
-### User Config Locations (XDG)
-
-After running `wingman init`, config files are stored in:
+## Architecture
 
 ```
-~/.config/wingman/
-├── config.yaml           # Main configuration
-├── contacts.yaml         # Contact profiles
-├── groups.yaml           # Group settings
-├── policies.yaml         # Response policies
-└── node_listener/        # Installed Node.js listener
-
-~/.local/share/wingman/
-├── conversations.db      # SQLite database
-└── auth_state/           # WhatsApp credentials
-
-~/.cache/wingman/
-└── logs/                 # Log files
+┌─────────────────────────────────────────────────────────┐
+│                    WhatsApp Web                          │
+└────────────────────────┬────────────────────────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────┐
+│           Node.js Listener (Baileys)                     │
+│  - Connects to WhatsApp Web via WebSocket                │
+│  - Handles QR auth, message receive/send                 │
+└────────────────────────┬────────────────────────────────┘
+                         │ IPC (stdin/stdout JSON)
+┌────────────────────────▼────────────────────────────────┐
+│              Python Agent                                │
+│  - Policy evaluation (should we respond?)                │
+│  - Contact/group resolution                              │
+│  - Tone adaptation based on relationship                 │
+│  - OpenAI GPT integration                                │
+│  - Conversation memory (SQLite)                          │
+│  - Safety controls (rate limits, quiet hours)            │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## Troubleshooting
 
-### QR Code Won't Scan
-
-- Make sure terminal is large enough to display the QR code
-- Try reducing terminal font size
-- Ensure good lighting when scanning
-
 ### Bot Not Responding
 
-1. Check if daemon is running:
-   ```bash
-   wingman status
-   ```
+```bash
+# Check if running
+wingman status
 
-2. Check logs for errors:
-   ```bash
-   wingman logs --error
-   ```
+# Check logs for errors
+wingman logs --error
 
-3. Verify OpenAI API key is valid:
-   ```bash
-   wingman config --show
-   ```
+# Verify config
+wingman console
+/config show
+```
 
-4. Check policy rules - the contact may be set to `never` respond
+### WhatsApp Disconnected
 
-### "WhatsApp Logged Out" Error
-
-WhatsApp may log out linked devices periodically. Re-authenticate:
+WhatsApp may disconnect linked devices. Re-authenticate:
 
 ```bash
 wingman stop
@@ -466,47 +427,43 @@ wingman auth
 wingman start
 ```
 
-### Config Changes Not Working
+### QR Code Won't Scan
 
-Config files auto-reload every 2 seconds. If changes aren't applying:
-1. Check for YAML syntax errors:
-   ```bash
-   wingman config --show
-   ```
-2. Check the logs for reload messages:
-   ```bash
-   wingman logs
+- Ensure terminal is large enough
+- Try reducing font size
+- Good lighting helps
 
-## Important Notes
+## Prerequisites
 
-- **Mac must stay logged in** - The daemon runs as a user agent. It won't run when logged out.
-- **Screen lock is OK** - The bot continues running when the screen is locked.
-- **Auto-restart** - If the bot crashes, launchd will automatically restart it.
-- **Rate limiting** - Built-in rate limits prevent spam. Configure in `.env`.
+- **macOS** (tested) or Linux
+- **Python 3.10+**
+- **Node.js 20+**
+- **OpenAI API key**
+
+## Development
+
+```bash
+git clone https://github.com/metanoia-oss/wingman.git
+cd wingman
+pip install -e .
+wingman init
+```
+
+Run tests:
+```bash
+PYTHONPATH=src pytest tests/ -q
+```
 
 ## Uninstalling
 
-To completely remove Wingman:
-
 ```bash
-# Remove all Wingman data, config, and daemon
 wingman uninstall
-
-# Then remove the package
 pip uninstall wingman-ai
 ```
 
-Options:
-- `wingman uninstall --keep-config` - Keep config files, only remove data
-- `wingman uninstall --force` - Don't ask for confirmation
-
-## Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE)
 
 ## Acknowledgments
 
